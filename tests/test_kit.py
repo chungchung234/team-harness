@@ -31,11 +31,11 @@ def run(r, *args, env=None):
     return p.returncode, p.stdout + p.stderr
 
 def fm(**kw):
-    base = dict(id="ADR-001", type="adr", title="t", status="DRAFT", owner="이충현",
+    base = dict(id="ADR-001", type="adr", title="t", status="DRAFT", owner="홍길동",
                 created="2026-09-10", updated="2026-09-10", related="[D-01]")
     base.update(kw)
     return "---\n" + "\n".join(f"{k}: {v}" for k, v in base.items()) + "\n---\n# 본문\n"
-BACKLOG = "---\nid: DOC-005\ntype: backlog\ntitle: b\nstatus: ACCEPTED\nowner: 이충현\ncreated: 2026-09-10\nupdated: 2026-09-10\nrelated: [ADR-001]\n---\n## D-01. x\n"
+BACKLOG = "---\nid: DOC-005\ntype: backlog\ntitle: b\nstatus: ACCEPTED\nowner: 홍길동\ncreated: 2026-09-10\nupdated: 2026-09-10\nrelated: [ADR-001]\n---\n## D-01. x\n"
 
 def dc(r, *extra, env=None):
     if (r / "scripts").exists(): run(r, "scripts/gen_index.py", "docs", "--write")
@@ -46,9 +46,9 @@ r = repo({"a.md": fm().replace("\n", "\r\n"), "02.md": BACKLOG}); c, o = dc(r); 
 r = repo({"a.md": "﻿" + fm(), "02.md": BACKLOG}); c, o = dc(r); check("BOM 허용", c == 0, o)
 r = repo({"a.md": fm(related="\n  - D-01\n  - 'D-01 '"), "02.md": BACKLOG}); c, o = dc(r); check("블록 목록·따옴표·뒤 공백 related", c == 0, o)
 r = repo({"a.md": fm(owner="김철수 (잠정 — M-20260918 액션 #5 담당)"), "02.md": BACKLOG}); c, o = dc(r); check("괄호 주석 owner 1인 인정", c == 0, o)
-for bad in ["이충현, 김철수", "이충현 김철수", "이충현 외 1인", "이충현+김철수", "이충현、김철수", "백엔드 팀"]:
+for bad in ["홍길동, 김철수", "홍길동 김철수", "홍길동 외 1인", "홍길동+김철수", "홍길동、김철수", "백엔드 팀"]:
     r = repo({"a.md": fm(owner=bad), "02.md": BACKLOG}); c, o = dc(r); check(f"다인 owner 거부 `{bad}`", "E07" in o, o[-200:])
-r = repo({"a.md": fm(owner="박지성"), "02.md": BACKLOG}); c, o = dc(r, "--owners", "이충현,김철수"); check("허용 명단 밖 owner 거부", "E07" in o, o[-200:])
+r = repo({"a.md": fm(owner="박지성"), "02.md": BACKLOG}); c, o = dc(r, "--owners", "홍길동,김철수"); check("허용 명단 밖 owner 거부", "E07" in o, o[-200:])
 r = repo({"a.md": fm(id="2026"), "02.md": BACKLOG}); c, o = dc(r); check("정수 id → E05", "E05" in o, o[-200:])
 r = repo({"a.md": fm(updated="2026-09-21 10:00:00"), "02.md": BACKLOG}); c, o = dc(r); check("datetime updated 무충돌", "Traceback" not in o and c == 0, o[-300:])
 r = repo({"a.md": fm(related="[D-01, M-20260918]"), "02.md": BACKLOG}); (r/"notes/meetings").mkdir(parents=True); (r/"notes/meetings/m.md").write_text(fm(id="M-20260918", type="meeting", title="회의"))
@@ -57,7 +57,7 @@ check("notes/는 목차에 없다", "M-20260918" not in (r/"docs/INDEX.md").read
 r = repo({"a.md": fm(related="[D-01, M-20260999]"), "02.md": BACKLOG}); c, o = dc(r); check("없는 회의록 id → E11", "E11" in o, o[-200:])
 r = repo({"g.md": fm(id="DOC-100", type="guide", related="[backend/D-99, backend/ADR-007, product/POL-02]")}); run(r, "scripts/gen_index.py", "docs", "--write"); c, o = run(r, "scripts/docs_check.py", "docs"); check("저장소/ID 참조 → W07 한 줄에 묶음 (오류 아님)", c == 0 and o.count("W07") == 1 and all(x in o for x in ("backend/D-99", "backend/ADR-007", "product/POL-02")), o[-300:])
 r = repo({"g.md": fm(id="DOC-100", type="guide", related="[D-99, ADR-007]")}); run(r, "scripts/gen_index.py", "docs", "--write"); c, o = run(r, "scripts/docs_check.py", "docs"); check("저장소 이름 없는 미해결 id → E12·E11", "E12" in o and "E11" in o, o[-300:])
-r = repo({"a.md": fm(), "02.md": BACKLOG}); (r/"notes/meetings").mkdir(parents=True); (r/"notes/meetings/m.md").write_text(fm(id="M-20260918", type="meeting", title="회의", owner="이충현, 김철수"))
+r = repo({"a.md": fm(), "02.md": BACKLOG}); (r/"notes/meetings").mkdir(parents=True); (r/"notes/meetings/m.md").write_text(fm(id="M-20260918", type="meeting", title="회의", owner="홍길동, 김철수"))
 run(r, "scripts/gen_index.py", "docs", "--write"); c, o = run(r, "scripts/docs_check.py", "docs", "notes"); check("notes/ 문서도 검사한다 (E07)", "E07" in o and "notes/meetings/m.md" in o, o[-300:])
 r = repo({"a.md": fm() + "\n[회의](../meetings/x.md)\n```\n[코드](nope.md)\n```\n[웹](https://x.io) [앵커](#h)\n", "02.md": BACKLOG}); c, o = dc(r); check("본문 깨진 링크 E16 (코드블록·웹·앵커 제외)", o.count("E16") == 1 and "nope.md" not in o, o[-300:])
 r = repo({"a.md": fm(), "02.md": BACKLOG}); run(r, "scripts/gen_index.py", "docs", "--write"); (r/"docs/b.md").write_text(fm(id="ADR-002")); c, o = run(r, "scripts/docs_check.py", "docs"); check("낡은 INDEX → E15", "E15" in o and "낡" not in "x" and "어긋난다" in o, o[-200:])
