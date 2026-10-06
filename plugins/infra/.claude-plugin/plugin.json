@@ -1,0 +1,11 @@
+{
+  "name": "infra",
+  "version": "0.13.8",
+  "description": "하네스 — 운영용. /research(+ 코어의 /adr로 런북·환경 결정). core에 의존.",
+  "author": {
+    "name": "하네스 담당"
+  },
+  "dependencies": [
+    "core"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "base": "https://bitbucket.org/YOUR-WORKSPACE/",
+  "default_branch": "main",
+  "jira": {
+    "site": "https://YOUR-SITE.atlassian.net",
+    "project": "KEY"
+  },
+  "company_email_domain": "",
+  "marketplace_add": "chungchung234/team-harness",
+  "roles": {
+    "기획자": "product",
+    "기획": "product",
+    "백엔드": "backend",
+    "프론트": "frontend",
+    "퍼블리셔": "ui",
+    "에이전트": "agent",
+    "AI": "agent",
+    "운영": "infra",
+    "문서총괄": "harness"
+  },
+  "reads": {
+    "memo": [],
+    "product": [
+      "memo"
+    ],
+    "backend": [
+      "product",
+      "agent",
+      "memo"
+    ],
+    "agent": [
+      "product",
+      "backend",
+      "memo"
+    ],
+    "frontend": [
+      "product",
+      "backend",
+      "ui",
+      "memo"
+    ],
+    "ui": [
+      "product",
+      "memo"
+    ],
+    "infra": [
+      "backend",
+      "agent",
+      "frontend",
+      "memo"
+    ]
+  }
+}

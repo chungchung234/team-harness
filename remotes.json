@@ -1,0 +1,15 @@
+{
+  "_설명": "회사·팀에 맞게 바꿀 곳은 이 파일 하나다. 바꾼 뒤 python3 sync.py update demo/* 와 python3 build.py",
+  "base": "https://bitbucket.org/YOUR-WORKSPACE/",
+  "default_branch": "main",
+  "jira": {
+    "site": "https://YOUR-SITE.atlassian.net",
+    "project": "KEY"
+  },
+  "company_email_domain": "",
+  "marketplace": {
+    "source": "github",
+    "repo": "chungchung234/team-harness"
+  },
+  "marketplace_add": "chungchung234/team-harness"
+}

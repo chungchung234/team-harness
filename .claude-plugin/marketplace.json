@@ -1,0 +1,45 @@
+{
+  "name": "team-harness",
+  "description": "하네스 — 계약 층(core) + 역할별 플러그인. 저장소는 .claude/settings.json의 enabledPlugins로 무엇을 쓰는지 선언만 한다.",
+  "owner": {
+    "name": "하네스 담당"
+  },
+  "plugins": [
+    {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "하네스 — 계약 층. 모든 저장소에 같아야 하는 것: 훅 3(문서 저장 검사·이슈 키·세션 피드), 스크립트 9, 코어 스킬 9(/ask /answer /approve /adr /minutes /status /init /onboard /catchup), 서브에이전트 2, 공통 규칙(세션 시작에 주입).",
+      "version": "0.13.8"
+    },
+    {
+      "name": "product",
+      "source": "./plugins/product",
+      "description": "하네스 — 기획자용. /policy 정책서, /research. core에 의존.",
+      "version": "0.13.8"
+    },
+    {
+      "name": "dev",
+      "source": "./plugins/dev",
+      "description": "하네스 — 개발(backend·agent)용. /feature /spec /bug /research /review-docs. core에 의존.",
+      "version": "0.13.8"
+    },
+    {
+      "name": "frontend",
+      "source": "./plugins/frontend",
+      "description": "하네스 — 프론트용. dev + /api-client(OpenAPI에서 클라이언트 생성). dev에 의존.",
+      "version": "0.13.8"
+    },
+    {
+      "name": "ui",
+      "source": "./plugins/ui",
+      "description": "하네스 — 퍼블리셔용. /tokens(Figma 변수 → 토큰) /research /review-docs. core에 의존.",
+      "version": "0.13.8"
+    },
+    {
+      "name": "infra",
+      "source": "./plugins/infra",
+      "description": "하네스 — 운영용. /research(+ 코어의 /adr로 런북·환경 결정). core에 의존.",
+      "version": "0.13.8"
+    }
+  ]
+}

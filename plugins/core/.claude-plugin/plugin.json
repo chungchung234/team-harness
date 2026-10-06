@@ -1,0 +1,8 @@
+{
+  "name": "core",
+  "version": "0.13.8",
+  "description": "하네스 — 계약 층. 모든 저장소에 같아야 하는 것: 훅 3(문서 저장 검사·이슈 키·세션 피드), 스크립트 10, 코어 스킬 10(/ask /answer /note /approve /adr /minutes /status /init /onboard /catchup), 서브에이전트 2, 공통 규칙(세션 시작에 주입).",
+  "author": {
+    "name": "하네스 담당"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "raw": true,
+  "harness": "0.13.8",
+  "plugins": [
+    "core"
+  ],
+  "prefixes": {}
+}

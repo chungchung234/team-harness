@@ -1,0 +1,8 @@
+# 메모 저장소 — 원자료. 검사는 시크릿 스캔뿐이다(형식·목차·이슈 키 없음). ⚠️ gitleaks 단계는 킷에서 실행 검증하지 못했다.
+pipelines:
+  default:
+    - step:
+        name: secret scan
+        image: zricethezav/gitleaks:latest
+        script:
+          - gitleaks detect --source . --no-git --redact --exit-code 1 || { echo "E92 시크릿이 들어 있다 → 지우고 키를 폐기한다"; exit 1; }

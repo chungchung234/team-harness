@@ -1,0 +1,2 @@
+# 리뷰어 자동 지정 (Bitbucket Cloud: 제안까지. 강제는 브랜치 권한 + Pipelines). 셋업 때 @핸들을 실제 계정으로.
+retro/**                    @문서총괄

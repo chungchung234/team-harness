@@ -1,0 +1,11 @@
+{
+  "name": "dev",
+  "version": "0.13.8",
+  "description": "하네스 — 개발(backend·agent)용. /feature /spec /bug /research /review-docs. core에 의존.",
+  "author": {
+    "name": "하네스 담당"
+  },
+  "dependencies": [
+    "core"
+  ]
+}

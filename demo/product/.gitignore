@@ -1,0 +1,12 @@
+snapshot/
+__pycache__/
+*.pyc
+.env
+.claude/settings.local.json
+# 목차는 생성물 — 커밋하면 PR마다 충돌한다. 훅·init·CI가 만든다
+docs/INDEX.md
+# 세션 피드 상태(지난 세션의 HEAD)·팀 현황 사본 — 각자 PC의 것
+.claude/harness-state.json
+.claude/TEAM.md
+# CI가 받는 하네스
+.harness/

@@ -1,0 +1,6 @@
+# 리뷰어 자동 지정 (Bitbucket Cloud: 제안까지. 강제는 브랜치 권한 + Pipelines). 셋업 때 @핸들을 실제 계정으로.
+docs/policy/**              @기획자
+docs/questions/**           @기획자
+docs/glossary.md            @기획자
+docs/decisions/**           @기획자 @백엔드리드 @프론트리드
+docs/03-문서관리-규약.md          @문서총괄

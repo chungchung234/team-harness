@@ -1,0 +1,71 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "../memo"
+    ],
+    "allow": [
+      "Bash(python3 *scripts/new_doc.py*)",
+      "Bash(python3 *scripts/docs_check.py*)",
+      "Bash(python3 *scripts/gen_index.py*)",
+      "Bash(python3 *scripts/decision_log.py*)",
+      "Bash(python3 *scripts/questions.py*)",
+      "Bash(python3 *scripts/pr.py*)",
+      "Bash(python3 *scripts/issue.py*)",
+      "Bash(python3 *scripts/init.py*)",
+      "Bash(python3 *scripts/memo.py*)",
+      "Bash(python3 *scripts/notify_impact.py*)",
+      "Bash(python3 *scripts/migrate_from_project.py*)",
+      "Write(docs/**)",
+      "Edit(docs/**)",
+      "Write(notes/**)",
+      "Edit(notes/**)",
+      "Write(../*/docs/questions/**)",
+      "Write(../memo/people/**)",
+      "Edit(../memo/people/**)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git show*)",
+      "Bash(git fetch*)",
+      "Bash(git pull*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git checkout*)",
+      "Bash(git switch*)",
+      "Bash(git branch*)",
+      "Bash(git rev-parse*)",
+      "Bash(git push -u origin*)",
+      "Bash(git push -q -u origin*)",
+      "Bash(git rebase*)",
+      "Bash(git stash*)",
+      "Bash(git -C*)",
+      "Bash(git merge --ff-only*)",
+      "Bash(ls*)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(grep *)",
+      "Bash(find *)"
+    ],
+    "deny": [
+      "Read(../tokens.txt)",
+      "Read(**/tokens.txt)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(*tokens.txt*)",
+      "Bash(find * -delete*)",
+      "Bash(find * -exec*)"
+    ]
+  },
+  "enabledPlugins": {
+    "core@team-harness": true,
+    "product@team-harness": true
+  },
+  "extraKnownMarketplaces": {
+    "team-harness": {
+      "source": {
+        "source": "github",
+        "repo": "chungchung234/team-harness"
+      }
+    }
+  }
+}

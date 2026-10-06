@@ -1,0 +1,11 @@
+{
+  "name": "product",
+  "version": "0.13.8",
+  "description": "하네스 — 기획자용. /policy 정책서, /research. core에 의존.",
+  "author": {
+    "name": "하네스 담당"
+  },
+  "dependencies": [
+    "core"
+  ]
+}
