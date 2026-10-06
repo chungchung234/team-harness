@@ -240,8 +240,8 @@ def check(work: Path, mine: str | None) -> int:
     if own:
         tr = run("git", "ls-files", "--error-unmatch", ".claude/settings.local.json", cwd=own)
         row(tr.returncode != 0, "자격증명 파일이 커밋되지 않는다", "`git rm --cached .claude/settings.local.json` 뒤 토큰을 폐기·재발급")
-    pl = run("claude", "plugin", "list")
-    row(pl.returncode == 0 and "core" in pl.stdout, "플러그인 core", "`claude plugin install core@team-harness`")
+    code, pl = claude_cli("list")   # claude CLI가 없어도(데스크톱 앱만 쓰는 사람) 점검은 끝까지 간다
+    row(code == 0 and "core" in pl, "플러그인 core", "`claude plugin install core@team-harness`" if code != 127 else "Claude Code 앱의 플러그인 화면에서 core@team-harness 설치 — 터미널 claude 명령은 없어도 된다")
     rows.append("  · 사람만 할 수 있는 것: 내 폴더에서 Claude를 한 번 열고 '이 폴더를 신뢰하시겠습니까'에 '신뢰' · 토큰 발급(위 파일 안 4단계)")
     print("설치 점검 — " + str(work)); print("\n".join(rows))
     return 0 if all(r.startswith("  ✓") or r.startswith("  ·") for r in rows) else 1

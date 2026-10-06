@@ -13,8 +13,6 @@ def check(name, cond, detail=""):
     global ok, fail
     ok += cond; fail += (not cond)
     print(("  PASS " if cond else "  FAIL ") + name + ("" if cond else f"  ← {detail}"))
-    if not cond and os.environ.get("GITHUB_ACTIONS"):   # GitHub 화면에 실패를 주석으로 띄운다
-        print("::error title=" + name.replace(",", " ").replace(":", " ")[:120] + "::" + str(detail).replace("\n", " ¶ ")[-900:])
 
 def repo(docs: dict, with_scripts=True):
     r = W / f"r{ok+fail}"; shutil.rmtree(r, ignore_errors=True); (r / "docs").mkdir(parents=True)

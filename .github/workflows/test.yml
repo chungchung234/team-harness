@@ -23,7 +23,13 @@ jobs:
       - name: 역할 플러그인 사본이 코어와 같은가
         run: python3 build.py --check
       - name: 회귀 시험
-        run: python3 tests/test_kit.py
+        run: |
+          set +e
+          python3 tests/test_kit.py > test-out.txt 2>&1; rc=$?
+          cat test-out.txt
+          # 실패하면 PASS가 아닌 줄을 GitHub 화면 주석으로 띄운다
+          if [ $rc -ne 0 ]; then echo "::error title=회귀 시험::$(grep -v '^  PASS' test-out.txt | tail -c 3000 | tr '\n' '¶')"; fi
+          exit $rc
       - name: 마켓플레이스·플러그인 검증
         run: |
           npm install -g --silent @anthropic-ai/claude-code
