@@ -24,8 +24,6 @@ HERE = Path(__file__).resolve().parent
 VERSION = (HERE / "VERSION").read_text(encoding="utf-8").strip()
 CORE = HERE / "plugins" / "core"
 MARKET = "team-harness"
-ROLE_PLUGIN = {"product": "product", "backend": "dev", "agent": "dev", "frontend": "frontend", "ui": "ui", "infra": "infra"}
-ROLES = {"기획자": "product", "기획": "product", "백엔드": "backend", "프론트": "frontend", "퍼블리셔": "ui", "에이전트": "agent", "AI": "agent", "운영": "infra", "문서총괄": "harness"}
 MARK_S, MARK_E = "<!-- harness:common start", "<!-- harness:common end -->"
 
 
@@ -37,86 +35,14 @@ def repos_json() -> str:
     """플러그인 scripts/repos.json — init.py·issue.py가 읽는다. 원격 주소·역할·읽는 저장소·Jira."""
     r = remotes()
     return json.dumps({"base": r["base"], "default_branch": r.get("default_branch", "main"), "jira": r.get("jira", {}),
-                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
+                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "plugins": ROLE_PLUGIN, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
 
 
-REPOS = {
-    "memo": dict(
-        owner="전원 (각자 자기 폴더) · 하네스 담당이 구조만", handle="@문서총괄", label="메모 — 사람의 생각·회고 (원자료, 근거 아님)",
-        purpose="아직 결정도 문서도 아닌 것을 두는 곳 — 개인 메모, 회의 전 생각, 조사 중 발견, 스프린트 회고. **잠금이 없다**(PR 없이 바로 올린다). 여기 있는 것은 그 사람의 생각이지 팀의 결정이 아니다 — 읽고 인용할 수 있으나 근거로 쓰지 않는다. 근거가 되려면 `/core:catchup`으로 `docs/`에 올린다.",
-        provides="없음 — 제공하는 계약이 없다. 모든 저장소가 읽는다",
-        reads=[],
-        dirs=["people/<이름>/  각자의 폴더 — **안의 구조는 각자 자유**(README의 \"내 폴더 지도\"에 적으면 `/core:note`가 따른다). 기본은 날짜 파일", "retro/  스프린트 회고·하네스 회의 — 팀이 함께 쓴다"],
-        extra="- 양식·번호·상태 없음. 목차 없음. 검사는 시크릿 스캔만. 커밋 메시지에 이슈 키가 없어도 된다(`memo: …`).\n- 남의 폴더에 쓰지 않는다. 남의 메모에 할 말이 있으면 자기 메모에 쓰거나 그 사람에게 말한다.",
-        mkdirs=["people", "retro"],
-        codeowners={"retro/**": "@문서총괄"},
-        raw=True,
-    ),
-    "product": dict(
-        owner="기획", handle="@기획자", label="제품 기획 · 팀 공통",
-        purpose="정책서·수용 기준·용어집·문서 규약을 담는다. **모든 팀이 읽는 저장소**다.",
-        provides="정책서(`docs/policy/`) · 수용 기준 · 용어집(`docs/glossary.md`) · 문서 규약(`docs/03-문서관리-규약.md`) · 팀 공통 ADR",
-        reads=[("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["docs/policy/  정책서와 수용 기준 — `POL-NN`. 수용 기준은 검증 가능한 문장으로: \"~인 경우 시스템은 ~한다\"",
-              "docs/glossary.md  용어집. 용어마다 별칭(한글·영문·약어). 개발·프론트는 PR로 제안한다",
-              "docs/decisions/  팀 공통 ADR (한 팀에 갇히지 않는 결정 — API 스타일, 인증, 저장소 구성)",
-              "docs/03-문서관리-규약.md  모든 저장소가 따르는 문서 규칙",
-              "docs/templates/  전 저장소 공용 양식 — 여기만 고친다"],
-        extra="- **질문에 답하는 것이 이 저장소의 절반이다.** 개발·프론트·에이전트 팀이 `docs/questions/`에 묻는다.",
-        mkdirs=["docs/policy", "docs/questions", "docs/decisions", "docs/templates", "notes/meetings", "notes/research"],
-        codeowners={"docs/policy/**": "@기획자", "docs/questions/**": "@기획자", "docs/glossary.md": "@기획자", "docs/decisions/**": "@기획자 @백엔드리드 @프론트리드", "docs/03-문서관리-규약.md": "@문서총괄"},
-    ),
-    "backend": dict(
-        owner="백엔드", handle="@백엔드리드", label="백엔드",
-        purpose="도메인·API·DB. 언어와 프레임워크는 첫 ADR로 정한다.",
-        provides="**OpenAPI** (`docs/api/openapi.yaml`) — 프론트와 외부가 소비한다. 바꾸면 `product`의 정책과 `frontend`의 클라이언트가 영향을 받는다",
-        reads=[("product", "정책·수용 기준·용어"), ("agent", "AI 서버 호출 계약"), ("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["src/", "docs/api/openapi.yaml  제공 계약 — 이 파일이 원천이고 코드가 따른다", "docs/specs/  정책서를 받아 쓴 스펙 — `SPEC-NN`", "docs/decisions/  백엔드 ADR", "docs/02-의사결정-백로그.md · 04-추적성-매트릭스.md  백엔드 논점·추적", "notes/  회의록·리서치 원자료 (목차 밖)"],
-        extra="- 프론트·외부가 이 저장소에 묻는 질문은 `docs/questions/`에 온다 — 주로 API에 관한 것이다.",
-        mkdirs=["src", "docs/api", "docs/specs", "docs/decisions", "docs/design", "docs/questions", "notes/meetings", "notes/research"],
-        codeowners={"docs/api/**": "@백엔드리드", "docs/specs/**": "@백엔드리드", "docs/decisions/**": "@백엔드리드", "docs/questions/**": "@백엔드리드", "notes/**": "@백엔드리드"},
-    ),
-    "agent": dict(
-        owner="에이전트", handle="@에이전트리드", label="AI 서버",
-        purpose="AI 기능 — 에이전트, 모델 호출, 평가.",
-        provides="**에이전트 API** (`docs/api/`) — backend가 소비한다 · **프롬프트** (`docs/prompts/`) — 제품 행동을 정의하므로 기획이 리뷰한다 · 평가 세트(`docs/evals/`)",
-        reads=[("product", "정책·수용 기준 — AI가 지켜야 할 규칙의 원천"), ("backend", "도메인 모델·용어"), ("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["src/", "docs/api/  제공 계약", "docs/prompts/  프롬프트 원문 — 버전이 곧 제품 행동. 기획자가 CODEOWNERS로 리뷰", "docs/evals/  평가 세트와 결과 — 프롬프트를 바꾸면 돌린다", "docs/decisions/  에이전트 ADR", "notes/"],
-        extra="- AI 응답 기록의 형식을 바꾸는 변경은 ADR로 남긴다.",
-        mkdirs=["src", "docs/api", "docs/prompts", "docs/evals", "docs/decisions", "docs/questions", "notes/meetings", "notes/research"],
-        codeowners={"docs/api/**": "@에이전트리드", "docs/prompts/**": "@에이전트리드 @기획자", "docs/evals/**": "@에이전트리드", "docs/decisions/**": "@에이전트리드", "docs/questions/**": "@에이전트리드"},
-    ),
-    "frontend": dict(
-        owner="프론트", handle="@프론트리드", label="화면",
-        purpose="화면. 계약을 제공하지 않고 소비만 한다.",
-        provides="화면. 제공 계약 없음 — `packages/api-client`는 `../backend/docs/api/openapi.yaml`에서 **생성**한다(손으로 쓰지 않는다)",
-        reads=[("product", "정책·수용 기준·용어 — 화면 문구와 흐름의 원천"), ("backend", "OpenAPI → `packages/api-client` 생성"), ("ui", "디자인 토큰·컴포넌트 패키지"), ("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["apps/  화면 앱", "packages/api-client/  생성물 — 편집 금지. 재생성 명령은 README", "docs/specs/  화면 스펙 — `SPEC-NN`. 어느 정책서(product/POL-NN)에서 왔는지 적는다", "docs/decisions/  프론트 ADR", "notes/"],
-        extra="- API가 부족하면 `../backend/docs/questions/`에, 정책이 모호하면 `../product/docs/questions/`에, 컴포넌트가 없으면 `../ui/docs/questions/`에 묻는다. 세 곳을 헷갈리지 않는다.",
-        mkdirs=["apps", "packages/api-client", "docs/specs", "docs/decisions", "docs/questions", "notes/meetings", "notes/research"],
-        codeowners={"apps/**": "@프론트리드", "docs/specs/**": "@프론트리드", "docs/decisions/**": "@프론트리드", "docs/questions/**": "@프론트리드", "packages/api-client/**": "@프론트리드"},
-    ),
-    "ui": dict(
-        owner="퍼블리셔", handle="@퍼블리셔", label="디자인 시스템",
-        purpose="토큰·컴포넌트 패키지. **원천은 Figma**이고 이 저장소는 그 코드 형태다. Figma는 MCP로 읽는다(`get_variable_defs` → 토큰, `get_design_context` → 컴포넌트).",
-        provides="npm 패키지 — frontend가 소비한다. 토큰(`tokens/`)·컴포넌트(`components/`)·접근성 규칙",
-        reads=[("product", "용어 — 컴포넌트 이름은 용어집을 따른다"), ("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["tokens/  Figma 변수에서 생성 — 손으로 고치지 않는다", "components/", "docs/decisions/  디자인 시스템 ADR (브라우저 지원, 접근성 기준)", "docs/questions/  프론트가 묻는 곳"],
-        extra="- Figma 파일 링크와 마지막 동기화 시각을 `docs/FIGMA.md`에 적는다. 디자이너가 Figma를 바꾸면 이 저장소의 에이전트가 토큰을 재생성해 PR을 올린다 — 퍼블리셔가 시각 충실도를 승인한다.",
-        mkdirs=["tokens", "components", "docs/decisions", "docs/questions", "notes/research"],
-        codeowners={"tokens/**": "@퍼블리셔", "components/**": "@퍼블리셔", "docs/**": "@퍼블리셔"},
-    ),
-    "infra": dict(
-        owner="백엔드 (착수 시) → 플랫폼 담당이 생기면 이관", handle="@백엔드리드", label="환경·배포",
-        purpose="환경(IaC)·배포 파이프라인·런북. 코드와 분리해 권한을 좁힌다.",
-        provides="배포 대상 저장소(backend·agent·frontend)의 환경. 런북(`docs/runbooks/`)",
-        reads=[("backend", "배포 단위"), ("agent", "서빙 요구"), ("frontend", "정적 배포·CDN"), ("memo", "팀원들의 메모·회고 — 생각이지 근거가 아니다")],
-        dirs=["iac/", "docs/runbooks/  장애 대응 — 에이전트가 읽고 1차 대응한다", "docs/decisions/  인프라 ADR (환경 분리, 비밀 관리)", "docs/questions/"],
-        extra="- 프로덕션 비밀은 이 저장소에도 두지 않는다. 비밀 관리 방식은 첫 ADR이다.",
-        mkdirs=["iac", "docs/runbooks", "docs/decisions", "docs/questions", "notes/research"],
-        codeowners={"iac/**": "@백엔드리드", "docs/runbooks/**": "@백엔드리드", "docs/decisions/**": "@백엔드리드"},
-    ),
-}
+# 팀 구성은 team.json에 있다 — 저장소·주인(역할)·읽는 저장소·폴더·플러그인. 구조를 바꾸려면 코드가 아니라 그 파일을 고친다.
+TEAM = json.loads((HERE / "team.json").read_text(encoding="utf-8"))
+ROLES = TEAM["roles"]
+ROLE_PLUGIN = {n: r.get("plugin", "core") for n, r in TEAM["repos"].items() if r.get("plugin", "core") != "core"}
+REPOS = {n: {**{k: v for k, v in r.items() if k not in ("reads", "plugin")}, "reads": [(x["repo"], x["why"]) for x in r.get("reads", [])]} for n, r in TEAM["repos"].items()}
 
 
 PIPELINES = """# 모든 PR과 main에서 문서를 검사한다. 실패 출력의 → 줄이 수정 지침이다.

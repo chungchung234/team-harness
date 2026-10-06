@@ -18,6 +18,14 @@
     "운영": "infra",
     "문서총괄": "harness"
   },
+  "plugins": {
+    "product": "product",
+    "backend": "dev",
+    "agent": "dev",
+    "frontend": "frontend",
+    "ui": "ui",
+    "infra": "infra"
+  },
   "reads": {
     "memo": [],
     "product": [

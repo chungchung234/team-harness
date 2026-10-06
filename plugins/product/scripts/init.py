@@ -37,7 +37,7 @@ BASE = (os.environ.get("HARNESS_BASE") or CFG["base"]).rstrip("/") + "/"   # HAR
 MARKET_SRC = os.environ.get("HARNESS_MARKETPLACE") or CFG.get("marketplace_add") or (BASE + "harness.git")
 
 
-ROLE_PLUGIN = {"product": "product", "backend": "dev", "agent": "dev", "frontend": "frontend", "ui": "ui", "infra": "infra", "harness": "core"}
+ROLE_PLUGIN = {**CFG.get("plugins", {}), "harness": "core"}   # 저장소 → 역할 플러그인 (team.json에서 온다)
 MARKET = "team-harness"
 GEN_INDEX = HERE / "gen_index.py"
 

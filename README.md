@@ -17,7 +17,8 @@ team-harness/
 ├─ sync.py                       팀 저장소의 골격(지도·설정·검사 파이프라인)을 만들고 고친다
 ├─ build.py                      공통 스크립트를 역할 플러그인에 복사하고 버전을 맞춘다
 ├─ remote.py                     원격 저장소를 만들고 설정한다 (Bitbucket)
-├─ remotes.json                  팀에 맞출 값 — 원격 주소, Jira, 메일 도메인, 마켓플레이스
+├─ team.json                     팀 구성 — 저장소, 주인(역할), 읽기 관계, 폴더, 플러그인
+├─ remotes.json                  연결 값 — 원격 주소, Jira, 메일 도메인, 마켓플레이스
 ├─ demo/                         시연용 팀 저장소 7개와 예시 문서(주문 취소 정책·스펙)
 │   └─ try.py                    내 컴퓨터에 시연 환경을 만든다
 └─ tests/                        회귀 시험
@@ -38,7 +39,7 @@ team-harness/
 
 ## 우리 팀에 맞추기
 
-바꿀 곳은 `remotes.json` 하나입니다.
+팀 구성은 `team.json`, 연결 값은 `remotes.json`에서 바꿉니다. 아래는 `remotes.json`의 값입니다.
 
 | 값 | 무엇 |
 |---|---|

@@ -374,4 +374,20 @@ check("build --check: 역할 플러그인 사본 = 코어", subprocess.run([sys.
 check("역할 플러그인 스킬은 자기 루트의 scripts를 부른다 (${CLAUDE_PLUGIN_ROOT})", '"${CLAUDE_PLUGIN_ROOT}/scripts/new_doc.py"' in (Path(str(HROOT)+"/plugins/product/skills/policy/SKILL.md")).read_text() and (Path(str(HROOT)+"/plugins/product/scripts/new_doc.py")).exists())
 check("플러그인 매니페스트: 역할 → 코어 의존", _j.loads(Path(str(HROOT)+"/plugins/dev/.claude-plugin/plugin.json").read_text())["dependencies"] == ["core"] and _j.loads(Path(str(HROOT)+"/plugins/frontend/.claude-plugin/plugin.json").read_text())["dependencies"] == ["dev"])
 
+print("team.json — 저장소 구조는 설정 파일에서 온다")
+TJ = W / "teamjson"; shutil.rmtree(TJ, ignore_errors=True); shutil.copytree(HROOT, TJ / "h", ignore=shutil.ignore_patterns(".git", "__pycache__", "demo", "tests"))
+_t = _j.loads((TJ / "h/team.json").read_text(encoding="utf-8"))
+check("team.json 기본값: 저장소 7개 · 역할 대응 · 플러그인", sorted(_t["repos"]) == ["agent", "backend", "frontend", "infra", "memo", "product", "ui"] and _t["roles"]["기획자"] == "product" and _t["repos"]["frontend"]["plugin"] == "frontend")
+_t["repos"] = {k: v for k, v in _t["repos"].items() if k in ("memo", "product", "backend", "frontend")}
+_t["repos"]["backend"]["reads"] = [{"repo": "product", "why": "정책"}, {"repo": "memo", "why": "메모"}]
+_t["repos"]["frontend"]["reads"] = [{"repo": "product", "why": "정책"}, {"repo": "backend", "why": "API"}, {"repo": "memo", "why": "메모"}]
+_t["roles"] = {"기획자": "product", "백엔드": "backend", "프론트": "frontend"}
+(TJ / "h/team.json").write_text(_j.dumps(_t, ensure_ascii=False), encoding="utf-8")
+_r = subprocess.run([sys.executable, str(TJ / "h/sync.py"), "all", "--into", str(TJ / "out")], capture_output=True, text=True)
+_made = sorted(p.name for p in (TJ / "out").iterdir()) if (TJ / "out").exists() else []
+_fs = _j.loads((TJ / "out/frontend/.claude/settings.json").read_text()) if (TJ / "out/frontend/.claude/settings.json").exists() else {}
+check("team.json을 4개로 줄이면 sync all이 4개만 만든다 · 읽는 저장소가 설정에 반영", _r.returncode == 0 and _made == ["backend", "frontend", "memo", "product"] and _fs.get("permissions", {}).get("additionalDirectories") == ["../product", "../backend", "../memo"], _r.stdout[-300:] + _r.stderr[-300:] + str(_made))
+_rj = _j.loads((TJ / "h/plugins/core/scripts/repos.json").read_text(encoding="utf-8"))
+check("repos.json에 team.json의 역할·플러그인·읽기가 실린다 (init이 읽는다)", _rj["roles"] == _t["roles"] and _rj["plugins"].get("frontend") == "frontend" and "agent" not in _rj["reads"])
+
 print(f"\n{ok} passed · {fail} failed")
