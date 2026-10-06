@@ -7,7 +7,7 @@
 
 - 인증: BITBUCKET_TOKEN (워크스페이스 액세스 토큰, repository:admin) 또는 BITBUCKET_USER + BITBUCKET_APP_PASSWORD.
 - 워크스페이스는 remotes.json의 base에서 읽는다.
-- ⚠️ 이 킷을 만들 때 Bitbucket에 접근할 수 없어 실호출은 미검증. "Require issue keys in commit messages"는 API가 없어 웹에서 한 번 켠다 (SETUP 4a).
+- ⚠️ 이 킷을 만들 때 Bitbucket에 접근할 수 없어 실호출은 미검증. "Require issue keys in commit messages"는 API가 없어 웹에서 한 번 켠다.
 """
 from __future__ import annotations
 
@@ -72,7 +72,7 @@ def main():
                 call("POST", f"/repositories/{WS}/{name}/branch-restrictions", {"kind": "restrict_merges", "users": [], "groups": [{"slug": a.owners, "owner": {"username": WS}}], **main_}, a.dry_run)
             call("POST", f"/repositories/{WS}/{name}/branch-restrictions", {"kind": "require_approvals_to_merge", "value": 1, **main_}, a.dry_run)
             call("POST", f"/repositories/{WS}/{name}/branch-restrictions", {"kind": "require_passing_builds_to_merge", "value": 1, **main_}, a.dry_run)
-            print(f"설정 {WS}/{name}: Pipelines 켬 · main {'직접 push 금지' if a.mode == 'pr' else '직접 push 허용(direct)'}·force·delete 금지 · 머지는 {a.owners or '(제한 없음 — --owners 권장)'} · 승인 1·빌드 1(권고) · 이슈 키 요구는 웹에서(SETUP 4a)")
+            print(f"설정 {WS}/{name}: Pipelines 켬 · main {'직접 push 금지' if a.mode == 'pr' else '직접 push 허용(direct)'}·force·delete 금지 · 머지는 {a.owners or '(제한 없음 — --owners 권장)'} · 승인 1·빌드 1(권고) · 이슈 키 요구는 웹에서")
 
 
 if __name__ == "__main__":
