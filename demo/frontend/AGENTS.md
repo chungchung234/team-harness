@@ -1,7 +1,6 @@
 # frontend — 화면
 
-`apps/candidate`(응시자 — 검사·면접·영상) · `apps/admin`(관리자 — 검사 구성·전형 운영). 계약을 제공하지 않고 소비만 한다.
-"앞으로 잘할 사람을 뽑기 위한 검사 도구"의 일부다. **최종 합/불은 AI가 내리지 않는다** — 이 원칙을 깨는 것은 만들지 않는다.
+화면. 계약을 제공하지 않고 소비만 한다.
 
 ## 규칙 세 줄
 사람은 지시하고 승인한다. 쓰는 것은 에이전트다. 자기 저장소에 쓰고, 남의 저장소는 읽고 질문한다.
@@ -9,7 +8,7 @@
 ## 이 저장소 — 소유: 프론트
 - 제공하는 것: 화면. 제공 계약 없음 — `packages/api-client`는 `../backend/docs/api/openapi.yaml`에서 **생성**한다(손으로 쓰지 않는다)
 - 목차는 맨 아래에서 불러오는 `docs/INDEX.md`(생성물). 필요한 문서만 경로로 연다. 전부 읽지 않는다. 맨 위 "최근 결정"이 이 저장소에서 정해진 것.
-- `apps/candidate/ · apps/admin/`
+- `apps/`  화면 앱
 - `packages/api-client/`  생성물 — 편집 금지. 재생성 명령은 README
 - `docs/specs/`  화면 스펙 — `SPEC-NN`. 어느 정책서(product/POL-NN)에서 왔는지 적는다
 - `docs/decisions/`  프론트 ADR

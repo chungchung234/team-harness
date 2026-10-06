@@ -1,7 +1,6 @@
-# backend — Spring 백엔드
+# backend — 백엔드
 
-도메인·API·DB. Java 최신 LTS · Spring Boot · PostgreSQL.
-"앞으로 잘할 사람을 뽑기 위한 검사 도구"의 일부다. **최종 합/불은 AI가 내리지 않는다** — 이 원칙을 깨는 것은 만들지 않는다.
+도메인·API·DB. 언어와 프레임워크는 첫 ADR로 정한다.
 
 ## 규칙 세 줄
 사람은 지시하고 승인한다. 쓰는 것은 에이전트다. 자기 저장소에 쓰고, 남의 저장소는 읽고 질문한다.
@@ -20,7 +19,7 @@
 
 ## 읽는 저장소 — 옆 폴더, `.claude/settings.json`에 열려 있다
 - `../product/` — 정책·수용 기준·용어. 목차: `../product/docs/INDEX.md`
-- `../agent/` — 에이전트 API — 면접관·평가 호출 계약. 목차: `../agent/docs/INDEX.md`
+- `../agent/` — AI 서버 호출 계약. 목차: `../agent/docs/INDEX.md`
 - `../memo/` — 팀원들의 메모·회고 — 생각이지 근거가 아니다. 사람 폴더 `people/<이름>/`, 회고 `retro/`. 목차 없음 — 세션 시작 `[메모]` 줄이 바뀐 것을 알린다
 계약을 바꾸고 싶거나 문서가 모호하면 **그 저장소의** `docs/questions/`에 `/core:ask`로 묻는다. 추측으로 채우지 않는다.
 다른 저장소의 문서를 `related`에 적을 때는 `저장소/ID`로 쓴다. 양식은 `../product/docs/templates/`.

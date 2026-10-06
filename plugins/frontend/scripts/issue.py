@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """issue — Jira 이슈를 만들고 키를 돌려준다. 커밋·브랜치·PR에 필요한 이슈 키를 사람이 Jira에 들어가 만들지 않게.
 
-    python3 <플러그인>/scripts/issue.py "이탈 감지 API 스펙" [--type Task] [--desc "…"] [--component backend]
-    → 출력: SSY-42
-    python3 <플러그인>/scripts/issue.py status SSY-41 SSY-42        # 구현 상태는 Jira가 갖는다 — 읽어 온다: `SSY-41  진행 중  이탈 감지 API  (10-28)`
-    python3 <플러그인>/scripts/issue.py transition SSY-41 "완료"     # 사람이 "됐다"고 한 뒤 — 수용 확인을 Jira 상태로 남긴다
-    python3 <플러그인>/scripts/issue.py comment SSY-41 "[하네스] product/POL-03 바뀜 — SPEC-04 확인 필요"   # 티켓 댓글 — 질문·알림. 담당자에게 Jira 알림이 간다
-    python3 <플러그인>/scripts/issue.py comments SSY-41 [--since 2026-10-01T09:00]                         # 댓글 읽기 (사람이 쓴 것과 에이전트가 쓴 것을 구분해 보인다)
+    python3 <플러그인>/scripts/issue.py "주문 취소 API 스펙" [--type Task] [--desc "…"] [--component backend]
+    → 출력: ORD-42
+    python3 <플러그인>/scripts/issue.py status ORD-41 ORD-42        # 구현 상태는 Jira가 갖는다 — 읽어 온다: `ORD-41  진행 중  주문 취소 API  (10-28)`
+    python3 <플러그인>/scripts/issue.py transition ORD-41 "완료"     # 사람이 "됐다"고 한 뒤 — 수용 확인을 Jira 상태로 남긴다
+    python3 <플러그인>/scripts/issue.py comment ORD-41 "[하네스] product/POL-03 바뀜 — SPEC-04 확인 필요"   # 티켓 댓글 — 질문·알림. 담당자에게 Jira 알림이 간다
+    python3 <플러그인>/scripts/issue.py comments ORD-41 [--since 2026-10-01T09:00]                         # 댓글 읽기 (사람이 쓴 것과 에이전트가 쓴 것을 구분해 보인다)
 
 - 설정: scripts/repos.json 의 jira.site·jira.project. 인증: 환경변수 JIRA_EMAIL + JIRA_TOKEN(Atlassian API 토큰).
 - 토큰이 없으면 만들 수 없다고 말하고 exit 3 — 스킬은 그때만 사람에게 키를 묻는다.

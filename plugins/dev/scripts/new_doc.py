@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """new_doc — 양식에서 새 문서를 만든다. 다음 번호를 스캔해서 부여하므로 id 충돌(E06)이 나지 않는다.
 
-    python3 <플러그인>/scripts/new_doc.py policy  "검사 응시 시간과 이탈 처리"                 # → docs/policy/POL-02-검사-응시-시간과-이탈-처리.md
-    python3 <플러그인>/scripts/new_doc.py spec    "이탈 감지 API" --related product/POL-01     # → docs/specs/SPEC-01-이탈-감지-API.md
+    python3 <플러그인>/scripts/new_doc.py policy  "주문 취소"                 # → docs/policy/POL-02-주문-취소.md
+    python3 <플러그인>/scripts/new_doc.py spec    "주문 취소 API" --related product/POL-01     # → docs/specs/SPEC-01-주문-취소-API.md
     python3 <플러그인>/scripts/new_doc.py question "'즉시'는 몇 초인가?" --to ../product --asked-by backend --related POL-01,backend/D-23
     python3 <플러그인>/scripts/new_doc.py adr     "에이전트 서버 Python 분리"
     python3 <플러그인>/scripts/new_doc.py meeting "AI 개발체계 리서치 공유" --date 2026-10-02  # → notes/meetings/2026-10-02-….md

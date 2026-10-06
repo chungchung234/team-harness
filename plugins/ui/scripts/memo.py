@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """memo — 아직 결정도 문서도 아닌 것을 memo 저장소의 내 폴더에 적고 바로 올린다. 저장소 밖(개인 노트·메신저)에 남기지 않기 위한 가장 가벼운 길.
 
-    python3 memo.py add "이탈 임계 3회가 너무 빡빡한 것 같다 — 내일 기획에 물어볼 것"      # people/<나>/2026-10-01.md 에 시각과 함께 붙인다
-    python3 memo.py add "..." --topic 이탈-임계                                           # people/<나>/이탈-임계.md 에 붙인다 (주제 파일)
+    python3 memo.py add "취소 가능 시간 30분이 짧은 것 같다 — 내일 기획에 물어볼 것"      # people/<나>/2026-10-01.md 에 시각과 함께 붙인다
+    python3 memo.py add "..." --topic 취소-시간                                           # people/<나>/취소-시간.md 에 붙인다 (주제 파일)
     python3 memo.py add "..." --retro 2026-10-sprint-1                                     # retro/2026-10-sprint-1.md (팀 회고 — 누구나 쓴다)
     python3 memo.py recent [--who 홍길동] [-n 10]                                             # 최근 메모 (파일·첫 줄)
     python3 memo.py add "..." --to 조사/LLM-폴백.md                                        # 내 폴더 안의 내가 정한 자리 (폴더 구조는 각자 자유)

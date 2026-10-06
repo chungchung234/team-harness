@@ -2,7 +2,7 @@
 """pr — 현재 브랜치를 푸시하고 Bitbucket PR을 만든다. 스킬이 마지막에 부르는 한 줄. 사람은 git을 만지지 않는다.
        그리고 소유자 쪽: 내 저장소에 열린 PR을 보고, 대화에서 "승인"하면 그 사람의 자격증명으로 승인·머지한다 — Bitbucket 웹에 들어가지 않아도 된다.
 
-    python3 <플러그인>/scripts/pr.py "SSY-12 Q-03 이탈 임계" --body "질문 한 문장…" [--repo ../product] [--dest main] [--dry-run]
+    python3 <플러그인>/scripts/pr.py "ORD-12 Q-03 취소 시간" --body "질문 한 문장…" [--repo ../product] [--dest main] [--dry-run]
     python3 <플러그인>/scripts/pr.py inbox [--brief]          # 이 저장소에 열린 PR (번호·제목·작성자)
     python3 <플러그인>/scripts/pr.py show 12                  # PR 하나의 설명·바뀐 파일 목록 (에이전트가 이걸 읽고 사람 말로 요약한다)
     python3 <플러그인>/scripts/pr.py merge 12 [--comment "…"] # 승인 + 머지. 사람이 대화에서 "승인"이라고 한 뒤에만. 코멘트에 승인 근거를 남긴다
@@ -179,7 +179,7 @@ def main() -> int:
     a = ap.parse_args()
     repo = Path(a.repo).resolve()
     if not KEY.search(a.title):
-        sys.exit("PR 제목에 Jira 이슈 키가 없다 (예: `SSY-12 …`). 커밋과 같은 규칙이다.")
+        sys.exit("PR 제목에 Jira 이슈 키가 없다 (예: `ORD-12 …`). 커밋과 같은 규칙이다.")
     branch = git(repo, "rev-parse", "--abbrev-ref", "HEAD")
     if a.direct:
         if branch not in ("main", "master"):
