@@ -52,6 +52,7 @@ LINK = re.compile(r"\]\(([^)\s]+)\)")
 FENCE = re.compile(r"^```.*?^```", re.S | re.M)
 LIVING_TYPES = {"index", "guide", "roadmap", "backlog"}  # 규약 §3 살아있는 문서 — 신선도 경고 제외
 GENERATED = {"INDEX.md"}  # gen_index 생성물 — 규약 §1 예외, 신선도는 E15가 본다
+LOG_FILES = {"대신-답한-기록.md"}  # 하네스 기록 파일(notes/, 표 한 줄씩) — 프론트매터 없음, 목차 밖
 
 
 def load(path: Path):
@@ -106,7 +107,7 @@ def main() -> int:
     cross = re.compile(r"^([a-z][a-z0-9-]*)/([A-Za-z]+-[\w.-]+)$")  # 다른 저장소 문서: 저장소/ID
     files = sorted(p for r in roots if r.exists() for p in r.rglob("*.md")
                    if not any(part in a.exclude for part in p.relative_to(r).parts)
-                   and not (r == root and p.relative_to(r).as_posix() in GENERATED))
+                   and not (r == root and p.relative_to(r).as_posix() in GENERATED) and p.name not in LOG_FILES)
 
     docs, texts, errs, warns = {}, {}, [], []
     d_defs, q_defs = set(), set()

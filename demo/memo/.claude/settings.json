@@ -43,7 +43,12 @@
       "Bash(head *)",
       "Bash(grep *)",
       "Bash(find *)",
-      "Bash(cd *)"
+      "Bash(cd *)",
+      "Bash(python3 *scripts/team_plan.py*)",
+      "Bash(python3 *scripts/downstream.py*)",
+      "Bash(python3 *scripts/answered.py*)",
+      "Edit(//**/docs/questions/**)",
+      "Edit(//**/memo/people/**)"
     ],
     "deny": [
       "Read(../tokens.txt)",

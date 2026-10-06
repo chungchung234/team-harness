@@ -14,9 +14,11 @@ argument-hint: '<저장소> "<질문 한 문장>"'
    `--related`: 그 저장소 안의 문서는 `POL-01`처럼, 다른 저장소 문서는 `backend/SPEC-03`처럼 `저장소/ID`.
 3. 만들어진 파일의 절을 채운다 — **질문**(어느 문서 어느 문장이 모호한지), **왜 지금 필요한가**(이 답이 없으면 무엇을 못 만드는가), **묻는 쪽의 추정**(예/아니오로 끝낼 수 있게. 근거가 없으면 "없음"이라고 쓴다 — 수치를 지어내지 않는다). **회신** 절은 비워 둔다.
 4. 검사는 저장 시 훅이 돈다. 오류가 돌아오면 고친다.
-5. 그 저장소에서 PR을 올린다 (이 저장소가 아니다). 이슈 키가 없으면 `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/issue.py" "<질문 제목>"`으로 만든다(exit 3이면 사람에게 묻는다):
+5. 그 저장소에서 PR을 올린다 (이 저장소가 아니다). `cd` 하지 않고 `git -C`로. 이슈 키가 없으면 `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/issue.py" "<질문 제목>"`으로 만든다(exit 3이면 사람에게 묻는다):
    ```
-   cd ../<저장소> && git checkout -b feature/<이슈키>-q-<번호> && git add docs/questions docs/INDEX.md && git commit -m "<이슈키> Q-NN <질문 요지>"
+   git -C ../<저장소> checkout -b feature/<이슈키>-q-<번호>
+   git -C ../<저장소> add docs/questions
+   git -C ../<저장소> commit -m "<이슈키> Q-NN <질문 요지>"
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/pr.py" "<이슈키> Q-NN <질문 한 문장>" --body "답: 이 파일의 회신 절에. 상태를 ANSWERED 또는 NEEDS-DECISION으로" --repo ../<저장소>
    ```
    `pr.py`가 푸시하고 PR을 만든다. 토큰이 없으면 링크를 출력한다 — 그 링크를 사람에게 보여준다(누르면 PR 화면이 채워져 있다).

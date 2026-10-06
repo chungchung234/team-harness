@@ -10,7 +10,7 @@ argument-hint: '<product/POL-NN> "<스펙 제목>"'
    - **원천 정책과 대응**: 정책서 수용 기준 A1, A2… 한 줄마다 스펙의 구현과 테스트 한 개. **빠지는 A가 없어야** 한다.
    - **동작**: 입력→처리→출력. API면 `docs/api/openapi.yaml`의 경로만 가리킨다 — 스키마를 여기 다시 쓰지 않는다. OpenAPI를 바꿔야 하면 그것도 이 PR에 넣고 "계약 변경" 절에 적는다.
    - **계약 변경**: 소비하는 저장소(`frontend`·외부)가 있으면 그 저장소에 `/core:ask`로 알린다 — 바꾸기 전에.
-   - **정책서에 물은 것**: "없는 것" 목록은 전부 `/core:ask product`로 만들고 여기 표에 `product/Q-NN OPEN`으로 적는다. 답을 지어서 채우지 않는다.
+   - **정책서에 물은 것**: "없는 것" 목록은 전부 `/core:ask product`로 만들고 여기 표에 `product/Q-NN OPEN`으로 적는다. 답을 지어서 채우지 않는다. 구현 중에 새로 발견한 빈틈도 같은 길로 올린다(RULES "돌아오는 길").
    - **하지 않는 것**: 정책서의 "하지 않는 것"을 그대로 잇고, 이 스펙이 다루지 않는 것을 더한다.
 4. 검사는 훅이 돈다. 스펙은 `DRAFT`로 둔다. 브랜치 `feature/<이슈키>-spec-NN`에 커밋 → `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/pr.py" "<이슈키> SPEC-NN <제목>" --body "원천 product/POL-NN · 대응 수용 기준 n건 · 열린 질문 m건"`. `ACCEPTED`는 사람이 회의에서.
 

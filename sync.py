@@ -35,7 +35,7 @@ def repos_json() -> str:
     """플러그인 scripts/repos.json — init.py·issue.py가 읽는다. 원격 주소·역할·읽는 저장소·Jira."""
     r = remotes()
     return json.dumps({"base": r["base"], "default_branch": r.get("default_branch", "main"), "jira": r.get("jira", {}),
-                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "plugins": ROLE_PLUGIN, "doc_types": TEAM.get("doc_types", {}), "docs": {n: r.get("docs", []) for n, r in TEAM["repos"].items()}, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
+                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "plugins": ROLE_PLUGIN, "doc_types": TEAM.get("doc_types", {}), "docs": {n: r.get("docs", []) for n, r in TEAM["repos"].items()}, "owners": {n: r.get("owner", "") for n, r in TEAM["repos"].items()}, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
 
 
 # 팀 구성은 team.json에 있다 — 저장소·주인(역할)·읽는 저장소·폴더·플러그인. 구조를 바꾸려면 코드가 아니라 그 파일을 고친다.
@@ -123,7 +123,7 @@ def marketplace_source() -> dict:
     return {"source": "git", "url": remotes()["base"].rstrip("/") + "/harness.git"}
 
 
-HARNESS_SCRIPTS = ("new_doc", "team_plan", "docs_check", "gen_index", "decision_log", "questions", "pr", "issue", "init", "memo", "notify_impact", "migrate_from_project")
+HARNESS_SCRIPTS = ("new_doc", "team_plan", "downstream", "answered", "docs_check", "gen_index", "decision_log", "questions", "pr", "issue", "init", "memo", "notify_impact", "migrate_from_project")
 
 
 def put_settings(d: Path, name: str):
@@ -135,7 +135,7 @@ def put_settings(d: Path, name: str):
     # 스킬의 allowed-tools는 쓰지 않는다 — 모델이 부른 스킬에 allowed-tools가 있으면 본문이 로드되지 않았다(T35, 비대화형). 권한은 여기서 준다.
     # 하네스 스크립트·git은 묻지 않고 돈다 — 비개발자에게 "python3 … 허용?" 창이 뜨지 않게. 위험한 것(main 직접 push·force)은 서버의 브랜치 권한이 막는다
     allow = settings.setdefault("permissions", {}).setdefault("allow", [])
-    for rule in [f"Bash(python3 *scripts/{n}.py*)" for n in HARNESS_SCRIPTS] + ["Write(docs/**)", "Edit(docs/**)", "Write(notes/**)", "Edit(notes/**)", "Write(../*/docs/questions/**)", "Write(../memo/people/**)", "Edit(../memo/people/**)"] + [f"Bash(git {g}*)" for g in ("status", "log", "diff", "show", "fetch", "pull", "add", "commit", "checkout", "switch", "branch", "rev-parse", "push -u origin", "push -q -u origin", "rebase", "merge --ff-only", "stash", "-C")] + ["Bash(cd *)", "Bash(ls*)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(find *)"]:
+    for rule in [f"Bash(python3 *scripts/{n}.py*)" for n in HARNESS_SCRIPTS] + ["Write(docs/**)", "Edit(docs/**)", "Write(notes/**)", "Edit(notes/**)", "Edit(//**/docs/questions/**)", "Edit(//**/memo/people/**)"] + [f"Bash(git {g}*)" for g in ("status", "log", "diff", "show", "fetch", "pull", "add", "commit", "checkout", "switch", "branch", "rev-parse", "push -u origin", "push -q -u origin", "rebase", "merge --ff-only", "stash", "-C")] + ["Bash(cd *)", "Bash(ls*)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(find *)"]:
         if rule not in allow:
             allow.append(rule)
     deny = settings.setdefault("permissions", {}).setdefault("deny", [])

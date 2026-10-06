@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SessionStart 훅 (core 플러그인) — (0) 공통 규칙(RULES.md)을 컨텍스트에 넣는다 (1) 자기 저장소와 읽는 저장소를 최신으로 당긴다 (2) **지난 세션 이후 바뀐 것**을 알린다 (3) 팀 현황 한 장을 만든다 (4) 답할 질문·회신 온 질문·열린 PR을 알린다.
+"""SessionStart 훅 (core 플러그인) — (0) 공통 규칙(RULES.md)을 컨텍스트에 넣는다 (1) 자기 저장소와 읽는 저장소를 최신으로 당긴다 (2) **지난 세션 이후 바뀐 것**을 알린다 (3) 낡은 내 문서를 짚는다 (4) 팀 현황 한 장을 만든다 (5) 답할 질문·회신 온 질문·열린 PR·대신 답한 것을 알린다.
 
 사람이 git pull을 기억할 필요가 없게, 그리고 **회의에 없던 사람·읽지 않은 에이전트가 낡은 전제로 일하지 않게** 하기 위한 것이다.
 규칙:
@@ -260,6 +260,16 @@ except Exception:
 state["heads"] = heads
 save_state(state)
 
+# 낡음 신호 — 읽는 저장소를 당긴 뒤에 계산한다 (기대던 문서가 나중에 바뀜 · 오래된 질문 · 다시 볼 날 지남)
+g = SCRIPTS / "gen_index.py"
+if g.exists() and (root / "docs").is_dir():
+    try:
+        r = subprocess.run([sys.executable, str(g), "docs", "--stale"], cwd=root, capture_output=True, text=True, encoding="utf-8", timeout=60)
+        if r.stdout.strip():
+            lines.append(r.stdout.rstrip())
+    except Exception:
+        pass
+
 t = team(root.parent)
 if t:
     lines.append(t)
@@ -278,5 +288,13 @@ if q.exists():
     r = subprocess.run([sys.executable, str(q), "--brief", "--repo", str(root)], capture_output=True, text=True, encoding="utf-8")
     if r.stdout.strip():
         lines.append(r.stdout.rstrip())
+ans = SCRIPTS / "answered.py"
+if ans.exists() and (root / "docs" / "questions").is_dir():
+    try:
+        r = subprocess.run([sys.executable, str(ans), "brief", "--mark", "--repo", str(root)], capture_output=True, text=True, encoding="utf-8", timeout=30)
+        if r.stdout.strip():
+            lines.append(r.stdout.rstrip())
+    except Exception:
+        pass
 if lines:
     sys.stdout.write("\n".join(lines[:40]) + "\n")

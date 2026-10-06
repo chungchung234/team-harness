@@ -126,6 +126,15 @@
       "research"
     ]
   },
+  "owners": {
+    "memo": "전원 (각자 자기 폴더) · 하네스 담당이 구조만",
+    "product": "기획",
+    "backend": "백엔드",
+    "agent": "에이전트",
+    "frontend": "프론트",
+    "ui": "퍼블리셔",
+    "infra": "백엔드 (착수 시) → 플랫폼 담당이 생기면 이관"
+  },
   "reads": {
     "memo": [],
     "product": [
