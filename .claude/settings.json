@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *scripts/team_plan.py*)",
+      "Bash(python3 build.py*)",
+      "Bash(python3 sync.py*)",
+      "Bash(python3 tests/*)",
+      "Bash(python3 demo/try.py*)",
+      "Write(team-proposal.json)",
+      "Edit(team-proposal.json)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(cd *)",
+      "Bash(ls*)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(grep *)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)"
+    ]
+  },
+  "enabledPlugins": {
+    "core@team-harness": true
+  },
+  "extraKnownMarketplaces": {
+    "team-harness": {
+      "source": {
+        "source": "github",
+        "repo": "chungchung234/team-harness"
+      }
+    }
+  }
+}

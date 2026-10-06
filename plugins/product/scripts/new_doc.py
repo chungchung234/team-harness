@@ -35,6 +35,14 @@ KIND = {
     "meeting":  ("회의록-템플릿.md", "notes/meetings",  "M",    0, "DRAFT"),
     "research": (None,               "notes/research",  "RS",   2, "DRAFT"),
 }
+# team.json의 문서 종류가 있으면 그것을 쓴다 (repos.json으로 온다)
+import json as _json
+try:
+    _CFG = _json.loads((Path(__file__).resolve().parent / "repos.json").read_text(encoding="utf-8"))
+except Exception:
+    _CFG = {}
+for _k, _v in (_CFG.get("doc_types") or {}).items():
+    KIND[_k] = (_v.get("template"), _v["dir"], _v["prefix"], int(_v.get("digits", 2)), _v.get("status", "DRAFT"))
 FM = re.compile(r"\A---\n(.*?)\n---\n", re.S)
 
 
@@ -96,6 +104,15 @@ def main() -> int:
     repo = Path(a.to).resolve()
     if not (repo / "docs").is_dir():
         sys.exit(f"저장소가 아니다 (docs/ 없음): {repo}")
+    _name = repo.name
+    try:
+        _name = _json.loads((repo / ".claude" / "harness.json").read_text(encoding="utf-8")).get("repo") or _name
+    except Exception:
+        pass
+    _allowed = (_CFG.get("docs") or {}).get(_name)
+    if _allowed is not None and a.kind not in _allowed:
+        _where = [n for n, ks in (_CFG.get("docs") or {}).items() if a.kind in ks]
+        sys.exit(f"{_name} 저장소는 '{a.kind}' 문서를 쓰지 않는다(team.json). 쓰는 저장소: {', '.join(_where) or '없음'}")
     tpl_name, dest, prefix, width, default_status = KIND[a.kind]
     today = dt.date.today().isoformat()
 

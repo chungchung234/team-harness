@@ -26,6 +26,106 @@
     "ui": "ui",
     "infra": "infra"
   },
+  "doc_types": {
+    "policy": {
+      "template": "정책서-템플릿.md",
+      "dir": "docs/policy",
+      "prefix": "POL",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "정책서"
+    },
+    "spec": {
+      "template": "스펙-템플릿.md",
+      "dir": "docs/specs",
+      "prefix": "SPEC",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "스펙"
+    },
+    "question": {
+      "template": "질문-템플릿.md",
+      "dir": "docs/questions",
+      "prefix": "Q",
+      "digits": 2,
+      "status": "OPEN",
+      "label": "질문"
+    },
+    "adr": {
+      "template": "ADR-템플릿.md",
+      "dir": "docs/decisions",
+      "prefix": "ADR",
+      "digits": 3,
+      "status": "DRAFT",
+      "label": "결정 기록(ADR)"
+    },
+    "design": {
+      "template": "설계문서-템플릿.md",
+      "dir": "docs/design",
+      "prefix": "DSN",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "설계 문서"
+    },
+    "meeting": {
+      "template": "회의록-템플릿.md",
+      "dir": "notes/meetings",
+      "prefix": "M",
+      "digits": 0,
+      "status": "DRAFT",
+      "label": "회의록"
+    },
+    "research": {
+      "template": null,
+      "dir": "notes/research",
+      "prefix": "RS",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "조사"
+    }
+  },
+  "docs": {
+    "memo": [],
+    "product": [
+      "policy",
+      "question",
+      "adr",
+      "meeting",
+      "research"
+    ],
+    "backend": [
+      "spec",
+      "question",
+      "adr",
+      "design",
+      "meeting",
+      "research"
+    ],
+    "agent": [
+      "spec",
+      "question",
+      "adr",
+      "meeting",
+      "research"
+    ],
+    "frontend": [
+      "spec",
+      "question",
+      "adr",
+      "meeting",
+      "research"
+    ],
+    "ui": [
+      "question",
+      "adr",
+      "research"
+    ],
+    "infra": [
+      "question",
+      "adr",
+      "research"
+    ]
+  },
   "reads": {
     "memo": [],
     "product": [

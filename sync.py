@@ -35,7 +35,7 @@ def repos_json() -> str:
     """플러그인 scripts/repos.json — init.py·issue.py가 읽는다. 원격 주소·역할·읽는 저장소·Jira."""
     r = remotes()
     return json.dumps({"base": r["base"], "default_branch": r.get("default_branch", "main"), "jira": r.get("jira", {}),
-                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "plugins": ROLE_PLUGIN, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
+                       "company_email_domain": r.get("company_email_domain", ""), "marketplace_add": r.get("marketplace_add", ""), "roles": ROLES, "plugins": ROLE_PLUGIN, "doc_types": TEAM.get("doc_types", {}), "docs": {n: r.get("docs", []) for n, r in TEAM["repos"].items()}, "reads": {n: [x for x, _ in rp["reads"]] for n, rp in REPOS.items()}}, ensure_ascii=False, indent=2) + "\n"
 
 
 # 팀 구성은 team.json에 있다 — 저장소·주인(역할)·읽는 저장소·폴더·플러그인. 구조를 바꾸려면 코드가 아니라 그 파일을 고친다.
@@ -123,7 +123,7 @@ def marketplace_source() -> dict:
     return {"source": "git", "url": remotes()["base"].rstrip("/") + "/harness.git"}
 
 
-HARNESS_SCRIPTS = ("new_doc", "docs_check", "gen_index", "decision_log", "questions", "pr", "issue", "init", "memo", "notify_impact", "migrate_from_project")
+HARNESS_SCRIPTS = ("new_doc", "team_plan", "docs_check", "gen_index", "decision_log", "questions", "pr", "issue", "init", "memo", "notify_impact", "migrate_from_project")
 
 
 def put_settings(d: Path, name: str):
@@ -218,7 +218,7 @@ def new_repo(name: str, parent: Path):
     reads = "\n".join((f"- `../{x}/` — {why}. 사람 폴더 `people/<이름>/`, 회고 `retro/`. 목차 없음 — 세션 시작 `[메모]` 줄이 바뀐 것을 알린다" if REPOS.get(x, {}).get("raw") else f"- `../{x}/` — {why}. 목차: `../{x}/docs/INDEX.md`") for x, why in r["reads"]) or "- (없음 — 이 저장소가 원천이다. 필요하면 `backend`·`frontend`를 읽기로 열 수 있다)"
     dirs = "\n".join(f"- `{line.split('  ',1)[0]}`  {line.split('  ',1)[1]}" if "  " in line else f"- `{line}`" for line in r["dirs"])
     tmpl = (HERE / "repo-template" / ("AGENTS-memo.md.tmpl" if r.get("raw") else "AGENTS.md.tmpl")).read_text(encoding="utf-8")
-    (d / "AGENTS.md").write_text(tmpl.format(name=name, label=r["label"], purpose=r["purpose"], owner=r["owner"], provides=r["provides"], dirs=dirs, extra=r["extra"], reads=reads,
+    (d / "AGENTS.md").write_text(tmpl.format(name=name, label=r["label"], purpose=r["purpose"], product_line=("\n" + TEAM["product"]) if TEAM.get("product") else "", owner=r["owner"], provides=r["provides"], dirs=dirs, extra=r["extra"], reads=reads,
                                               templates="`docs/templates/`" if name == "product" else "`../product/docs/templates/`",
                                               plugin=ROLE_PLUGIN.get(name, "core"), market=MARKET), encoding="utf-8")
     if name == "product":

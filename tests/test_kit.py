@@ -390,4 +390,28 @@ check("team.json을 4개로 줄이면 sync all이 4개만 만든다 · 읽는 �
 _rj = _j.loads((TJ / "h/plugins/core/scripts/repos.json").read_text(encoding="utf-8"))
 check("repos.json에 team.json의 역할·플러그인·읽기가 실린다 (init이 읽는다)", _rj["roles"] == _t["roles"] and _rj["plugins"].get("frontend") == "frontend" and "agent" not in _rj["reads"])
 
+print("team_plan — 구조 대화의 손")
+TP = W / "teamplan"; shutil.rmtree(TP, ignore_errors=True); shutil.copytree(HROOT, TP / "h", ignore=shutil.ignore_patterns(".git", "__pycache__", "demo", "tests"))
+(TP / "h/.claude").mkdir(exist_ok=True)
+_tp = lambda *a: subprocess.run([sys.executable, str(TP / "h/plugins/core/scripts/team_plan.py"), *a], cwd=TP / "h", capture_output=True, text=True)
+_r = _tp("show"); check("team_plan show: 지금 구성을 표로 (저장소·주인·읽기·문서)", _r.returncode == 0 and "| product |" in _r.stdout and "정책서" in _r.stdout and "역할:" in _r.stdout, _r.stdout[-300:] + _r.stderr[-300:])
+_cur = _j.loads((TP / "h/team.json").read_text(encoding="utf-8"))
+_bad = _j.loads(_j.dumps(_cur)); _bad["repos"]["backend"]["reads"].append({"repo": "mobile", "why": "x"}); _bad["repos"]["ui"]["plugin"] = "design"; _bad["repos"]["infra"]["owner"] = ""
+(TP / "h/.claude/bad.json").write_text(_j.dumps(_bad, ensure_ascii=False)); _r = _tp("check", ".claude/bad.json")
+check("team_plan check: 없는 저장소 읽기·없는 플러그인·빈 주인을 잡는다", _r.returncode == 1 and "mobile" in _r.stdout and "design" in _r.stdout and "주인" in _r.stdout, _r.stdout)
+_new = _j.loads(_j.dumps(_cur)); _ag = _new["repos"].pop("agent"); _new["repos"]["backend"]["reads"] = [x for x in _new["repos"]["backend"]["reads"] if x["repo"] != "agent"]; _new["repos"]["infra"]["reads"] = [x for x in _new["repos"]["infra"]["reads"] if x["repo"] != "agent"]
+_new["roles"] = {k: v for k, v in _new["roles"].items() if v != "agent"}; _new["repos"]["mobile"] = {"label": "앱", "owner": "앱", "purpose": "모바일 앱", "plugin": "frontend", "reads": [{"repo": "product", "why": "정책"}, {"repo": "backend", "why": "API"}, {"repo": "memo", "why": "메모"}], "docs": ["spec", "question"], "mkdirs": ["docs/specs", "docs/questions"], "dirs": [], "provides": "앱", "extra": "", "handle": "@앱", "codeowners": {}}
+(TP / "work/agent/docs/specs").mkdir(parents=True); (TP / "work/agent/docs/specs/SPEC-01-x.md").write_text("x"); (TP / "work/agent/docs/INDEX.md").write_text("x")
+(TP / "h/.claude/new.json").write_text(_j.dumps(_new, ensure_ascii=False)); _r = _tp("diff", ".claude/new.json", "--work", str(TP / "work"))
+check("team_plan diff: 새 저장소 · 없어지는 저장소와 옮길 문서 · 읽기 변화", "+ 새 저장소 mobile" in _r.stdout and "없어지는 저장소 agent" in _r.stdout and "SPEC-01-x.md" in _r.stdout and "INDEX.md" not in _r.stdout and "backend 읽는 저장소" in _r.stdout, _r.stdout)
+_before = (TP / "h/team.json").read_text(encoding="utf-8"); _r = _tp("apply", ".claude/bad.json")
+check("team_plan apply: 검사를 통과하지 못하면 적지 않는다", _r.returncode != 0 and (TP / "h/team.json").read_text(encoding="utf-8") == _before, _r.stdout[-200:] + _r.stderr[-200:])
+_r = _tp("apply", ".claude/new.json"); _after = _j.loads((TP / "h/team.json").read_text(encoding="utf-8"))
+check("team_plan apply: 통과한 안을 적고 이전 판을 남긴다 · doc_types 유지", _r.returncode == 0 and "mobile" in _after["repos"] and "agent" not in _after["repos"] and _after.get("doc_types") and (TP / "h/team.prev.json").exists(), _r.stdout + _r.stderr)
+_r = subprocess.run([sys.executable, str(TP / "h/sync.py"), "new", "mobile", "--into", str(TP / "out")], capture_output=True, text=True)
+check("apply 뒤 sync new: 새 저장소 골격이 team.json대로", _r.returncode == 0 and (TP / "out/mobile/docs/specs").is_dir() and "../product" in (TP / "out/mobile/.claude/settings.json").read_text(), _r.stdout[-200:] + _r.stderr[-200:])
+_r = subprocess.run([sys.executable, str(KIT / "new_doc.py"), "policy", "x"], cwd=TP / "out/mobile", capture_output=True, text=True)
+_r2 = subprocess.run([sys.executable, str(TP / "h/plugins/core/scripts/new_doc.py"), "policy", "x"], cwd=TP / "out/mobile", capture_output=True, text=True)
+check("new_doc: 저장소가 쓰지 않는 문서 종류는 만들지 않고 쓰는 저장소를 알려 준다", _r2.returncode != 0 and "policy" in _r2.stderr and "product" in _r2.stderr, _r2.stdout + _r2.stderr)
+
 print(f"\n{ok} passed · {fail} failed")

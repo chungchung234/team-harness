@@ -1,5 +1,7 @@
-__pycache__/
 *.pyc
 .DS_Store
-tokens.txt
 .claude/settings.local.json
+team-proposal.json
+team.prev.json
+__pycache__/
+tokens.txt

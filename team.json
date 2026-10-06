@@ -1,5 +1,6 @@
 {
-  "_설명": "팀 구성 — 저장소·주인(역할)·읽는 저장소·폴더·플러그인. sync.py·init이 읽는다. 공개 저장소에는 사람 이름을 넣지 않는다(역할만).",
+  "_설명": "팀 구성 — 저장소·주인(역할)·읽는 저장소·폴더·플러그인. sync.py·init이 읽는다. 공개 저장소에는 사람 이름을 넣지 않는다(역할만). docs = 그 저장소가 쓰는 문서 종류(doc_types의 키). product = 제품 한 줄(모든 저장소 지도 첫머리에 실린다, 비우면 싣지 않는다).",
+  "product": "",
   "roles": {
     "기획자": "product",
     "기획": "product",
@@ -10,6 +11,64 @@
     "AI": "agent",
     "운영": "infra",
     "문서총괄": "harness"
+  },
+  "doc_types": {
+    "policy": {
+      "template": "정책서-템플릿.md",
+      "dir": "docs/policy",
+      "prefix": "POL",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "정책서"
+    },
+    "spec": {
+      "template": "스펙-템플릿.md",
+      "dir": "docs/specs",
+      "prefix": "SPEC",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "스펙"
+    },
+    "question": {
+      "template": "질문-템플릿.md",
+      "dir": "docs/questions",
+      "prefix": "Q",
+      "digits": 2,
+      "status": "OPEN",
+      "label": "질문"
+    },
+    "adr": {
+      "template": "ADR-템플릿.md",
+      "dir": "docs/decisions",
+      "prefix": "ADR",
+      "digits": 3,
+      "status": "DRAFT",
+      "label": "결정 기록(ADR)"
+    },
+    "design": {
+      "template": "설계문서-템플릿.md",
+      "dir": "docs/design",
+      "prefix": "DSN",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "설계 문서"
+    },
+    "meeting": {
+      "template": "회의록-템플릿.md",
+      "dir": "notes/meetings",
+      "prefix": "M",
+      "digits": 0,
+      "status": "DRAFT",
+      "label": "회의록"
+    },
+    "research": {
+      "template": null,
+      "dir": "notes/research",
+      "prefix": "RS",
+      "digits": 2,
+      "status": "DRAFT",
+      "label": "조사"
+    }
   },
   "repos": {
     "memo": {
@@ -32,7 +91,8 @@
         "retro/**": "@문서총괄"
       },
       "extra": "- 양식·번호·상태 없음. 목차 없음. 검사는 시크릿 스캔만. 커밋 메시지에 이슈 키가 없어도 된다(`memo: …`).\n- 남의 폴더에 쓰지 않는다. 남의 메모에 할 말이 있으면 자기 메모에 쓰거나 그 사람에게 말한다.",
-      "raw": true
+      "raw": true,
+      "docs": []
     },
     "product": {
       "label": "제품 기획 · 팀 공통",
@@ -69,7 +129,14 @@
         "docs/decisions/**": "@기획자 @백엔드리드 @프론트리드",
         "docs/03-문서관리-규약.md": "@문서총괄"
       },
-      "extra": "- **질문에 답하는 것이 이 저장소의 절반이다.** 개발·프론트·에이전트 팀이 `docs/questions/`에 묻는다."
+      "extra": "- **질문에 답하는 것이 이 저장소의 절반이다.** 개발·프론트·에이전트 팀이 `docs/questions/`에 묻는다.",
+      "docs": [
+        "policy",
+        "question",
+        "adr",
+        "meeting",
+        "research"
+      ]
     },
     "backend": {
       "label": "백엔드",
@@ -117,7 +184,15 @@
         "docs/questions/**": "@백엔드리드",
         "notes/**": "@백엔드리드"
       },
-      "extra": "- 프론트·외부가 이 저장소에 묻는 질문은 `docs/questions/`에 온다 — 주로 API에 관한 것이다."
+      "extra": "- 프론트·외부가 이 저장소에 묻는 질문은 `docs/questions/`에 온다 — 주로 API에 관한 것이다.",
+      "docs": [
+        "spec",
+        "question",
+        "adr",
+        "design",
+        "meeting",
+        "research"
+      ]
     },
     "agent": {
       "label": "AI 서버",
@@ -153,6 +228,7 @@
         "docs/api",
         "docs/prompts",
         "docs/evals",
+        "docs/specs",
         "docs/decisions",
         "docs/questions",
         "notes/meetings",
@@ -165,7 +241,14 @@
         "docs/decisions/**": "@에이전트리드",
         "docs/questions/**": "@에이전트리드"
       },
-      "extra": "- AI 응답 기록의 형식을 바꾸는 변경은 ADR로 남긴다."
+      "extra": "- AI 응답 기록의 형식을 바꾸는 변경은 ADR로 남긴다.",
+      "docs": [
+        "spec",
+        "question",
+        "adr",
+        "meeting",
+        "research"
+      ]
     },
     "frontend": {
       "label": "화면",
@@ -215,7 +298,14 @@
         "docs/questions/**": "@프론트리드",
         "packages/api-client/**": "@프론트리드"
       },
-      "extra": "- API가 부족하면 `../backend/docs/questions/`에, 정책이 모호하면 `../product/docs/questions/`에, 컴포넌트가 없으면 `../ui/docs/questions/`에 묻는다. 세 곳을 헷갈리지 않는다."
+      "extra": "- API가 부족하면 `../backend/docs/questions/`에, 정책이 모호하면 `../product/docs/questions/`에, 컴포넌트가 없으면 `../ui/docs/questions/`에 묻는다. 세 곳을 헷갈리지 않는다.",
+      "docs": [
+        "spec",
+        "question",
+        "adr",
+        "meeting",
+        "research"
+      ]
     },
     "ui": {
       "label": "디자인 시스템",
@@ -252,7 +342,12 @@
         "components/**": "@퍼블리셔",
         "docs/**": "@퍼블리셔"
       },
-      "extra": "- Figma 파일 링크와 마지막 동기화 시각을 `docs/FIGMA.md`에 적는다. 디자이너가 Figma를 바꾸면 이 저장소의 에이전트가 토큰을 재생성해 PR을 올린다 — 퍼블리셔가 시각 충실도를 승인한다."
+      "extra": "- Figma 파일 링크와 마지막 동기화 시각을 `docs/FIGMA.md`에 적는다. 디자이너가 Figma를 바꾸면 이 저장소의 에이전트가 토큰을 재생성해 PR을 올린다 — 퍼블리셔가 시각 충실도를 승인한다.",
+      "docs": [
+        "question",
+        "adr",
+        "research"
+      ]
     },
     "infra": {
       "label": "환경·배포",
@@ -297,7 +392,12 @@
         "docs/runbooks/**": "@백엔드리드",
         "docs/decisions/**": "@백엔드리드"
       },
-      "extra": "- 프로덕션 비밀은 이 저장소에도 두지 않는다. 비밀 관리 방식은 첫 ADR이다."
+      "extra": "- 프로덕션 비밀은 이 저장소에도 두지 않는다. 비밀 관리 방식은 첫 ADR이다.",
+      "docs": [
+        "question",
+        "adr",
+        "research"
+      ]
     }
   }
 }
