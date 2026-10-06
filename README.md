@@ -39,7 +39,8 @@ team-harness/
 ├─ remotes.json                  연결 값 — 원격 주소, Jira, 메일 도메인, 마켓플레이스
 ├─ demo/                         시연용 팀 저장소 7개와 예시 문서(주문 취소 정책·스펙)
 │   └─ try.py                    내 컴퓨터에 시연 환경을 만든다
-└─ tests/                        회귀 시험
+├─ tests/                        회귀 시험
+└─ .github/workflows/test.yml   올릴 때마다 시험을 돌린다
 ```
 
 팀 저장소는 역할마다 하나씩입니다. 기획은 `product`, 개발은 `backend`·`agent`, 화면은 `frontend`·`ui`, 운영은 `infra`, 개인 메모는 `memo`에 씁니다. 저장소에는 지도와 설정만 있고, 동작은 모두 플러그인에서 옵니다.
@@ -80,6 +81,7 @@ team-harness/
 
 ## 아직 PoC입니다
 
-- GitHub 주소로 플러그인을 설치하는 것은 아직 시험하지 않았습니다. 시연은 이 폴더를 마켓플레이스로 씁니다.
+- GitHub 주소로 설치하는 길은 시험했습니다 — `claude plugin marketplace add chungchung234/team-harness` 뒤 `claude plugin install dev@team-harness`면 core가 함께 들어옵니다. 시연은 이 폴더를 마켓플레이스로 씁니다.
+- 팀 저장소의 검사 파이프라인은 원격이 Bitbucket이면 Pipelines, GitHub이면 Actions로 만들어집니다. 둘 다 실제 원격에서 돌려 보지는 않았습니다. 이 저장소 자체의 시험은 GitHub Actions(`.github/workflows/test.yml`)가 돌립니다.
 - Jira 연동(티켓 상태 읽기, 댓글로 질문하기)은 만들어 두었지만 실제 Jira에 연결해 보지는 않았습니다.
 - 시연 중 에이전트가 허용 목록 밖의 명령을 쓰면 실제 앱에서 "허용할까요?"가 뜹니다. 세 창 시연에서 드물게 한 번 정도 남아 있습니다.

@@ -270,8 +270,8 @@ check("Pipelines main에 영향 알림 단계(JIRA 변수 없으면 건너뜀)",
 _env = dict(os.environ, HARNESS_ME="홍길동")
 _r = subprocess.run([sys.executable, str(KIT/"memo.py"), "--repo", str(MM), "add", "LLM 폴백 후보 셋", "--to", "조사/LLM-폴백", "--no-push"], cwd=R3, capture_output=True, text=True, env=_env)
 check("memo add --to: 내 폴더 안 내가 정한 자리(하위 폴더)에", _r.returncode == 0 and (MM/"people/홍길동/조사/LLM-폴백.md").exists() and "LLM 폴백 후보 셋" in (MM/"people/홍길동/조사/LLM-폴백.md").read_text(), _r.stdout + _r.stderr)
-_r = subprocess.run([sys.executable, str(KIT/"memo.py"), "--repo", str(MM), "add", "x", "--to", "../충현/몰래", "--no-push"], cwd=R3, capture_output=True, text=True, env=_env)
-check("memo add --to: 내 폴더 밖(남의 폴더)은 거부", _r.returncode != 0 and "내 폴더 밖" in (_r.stdout + _r.stderr) and not (MM/"people/충현/몰래.md").exists(), _r.stdout + _r.stderr)
+_r = subprocess.run([sys.executable, str(KIT/"memo.py"), "--repo", str(MM), "add", "x", "--to", "../길동/몰래", "--no-push"], cwd=R3, capture_output=True, text=True, env=_env)
+check("memo add --to: 내 폴더 밖(남의 폴더)은 거부", _r.returncode != 0 and "내 폴더 밖" in (_r.stdout + _r.stderr) and not (MM/"people/길동/몰래.md").exists(), _r.stdout + _r.stderr)
 _r = subprocess.run([sys.executable, str(KIT/"memo.py"), "--repo", str(MM), "tree"], cwd=R3, capture_output=True, text=True, env=_env)
 check("memo tree: 내 폴더 구조", _r.returncode == 0 and "조사/" in _r.stdout and "LLM-폴백.md" in _r.stdout, _r.stdout + _r.stderr)
 (R3/".claude/settings.json").write_text('{"permissions":{"additionalDirectories":["../product", "../memo"]}}'); r = hk(); (R3/".claude/settings.json").write_text('{"permissions":{"additionalDirectories":["../product"]}}')
@@ -302,10 +302,10 @@ TW = W / "tokfirst"; shutil.rmtree(TW, ignore_errors=True); (TW/"s").mkdir(paren
 for f in ("init.py", "creds.py"): shutil.copy(KIT/f, TW/"s"/f)
 _cfg = _j.loads((KIT/"repos.json").read_text()); _cfg["base"] = "https://bitbucket.org/example-ws/"; (TW/"s"/"repos.json").write_text(_j.dumps(_cfg))
 _env = {k: v for k, v in os.environ.items() if k not in ("BITBUCKET_API_TOKEN", "JIRA_TOKEN", "JIRA_EMAIL")}
-_r = subprocess.run([sys.executable, str(TW/"s"/"init.py"), "기획자", "--no-plugins", "--name", "충현"], cwd=TW/"work", capture_output=True, text=True, env=_env)
+_r = subprocess.run([sys.executable, str(TW/"s"/"init.py"), "기획자", "--no-plugins", "--name", "길동"], cwd=TW/"work", capture_output=True, text=True, env=_env)
 check("init(https 원격, 토큰 없음): 토큰 파일을 만들고 열어 두고, 저장소는 받지 않고 멈춘다", _r.returncode == 0 and (TW/"work/tokens.txt").exists() and "토큰이 들어온 뒤에" in _r.stdout and not (TW/"work/product").exists(), _r.stdout[-400:] + _r.stderr[-200:])
 (TW/"work/tokens.txt").write_text((TW/"work/tokens.txt").read_text().replace("BITBUCKET_API_TOKEN=\n", "BITBUCKET_API_TOKEN=tok-zzz\n"))
-_r = subprocess.run([sys.executable, str(TW/"s"/"init.py"), "기획자", "--no-plugins", "--name", "충현"], cwd=TW/"work", capture_output=True, text=True, env=dict(_env, GIT_TERMINAL_PROMPT="0", HOME=str(TW)))
+_r = subprocess.run([sys.executable, str(TW/"s"/"init.py"), "기획자", "--no-plugins", "--name", "길동"], cwd=TW/"work", capture_output=True, text=True, env=dict(_env, GIT_TERMINAL_PROMPT="0", HOME=str(TW)))
 check("init(토큰 있음): git 열쇠를 저장한 뒤 받기를 시도한다 · 토큰 값은 출력하지 않는다", "git 열쇠" in _r.stdout and "tok-zzz" not in _r.stdout and ("clone" in _r.stdout or "실패" in _r.stdout), _r.stdout[-500:] + _r.stderr[-200:])
 # init — 내 이름 폴더(memo/people/<이름>/)와 HARNESS_ME (0.13.1); 빈 원격 방어
 IW = W / "initw"; shutil.rmtree(IW, ignore_errors=True); (IW/"remotes").mkdir(parents=True); (IW/"work").mkdir()
@@ -468,4 +468,23 @@ _hk = subprocess.run([sys.executable, str(HOOKS / "session_start.py")], cwd=PH /
 check("세션 시작 훅 실제 출력에 [낡음]·[대신 답함] 줄이 나온다", "[대신 답함]" in _hk.stdout and "[낡음]" in _hk.stdout, _hk.stdout[-800:] + _hk.stderr[-300:])
 check("세션 시작 훅이 낡음·대신 답함을 부른다", all(x in (HOOKS / "session_start.py").read_text() for x in ('"--stale"', "answered.py", '"--mark"')))
 
+print("GitHub 원격 — 팀 저장소에 Actions (문서 검사 + 비밀값 검사)")
+GH = W / "ghci"; shutil.rmtree(GH, ignore_errors=True); shutil.copytree(HROOT, GH / "h", ignore=shutil.ignore_patterns(".git", "__pycache__", "demo", "tests"))
+_rm = _j.loads((GH / "h/remotes.json").read_text(encoding="utf-8")); _rm["base"] = "https://github.com/acme/"; (GH / "h/remotes.json").write_text(_j.dumps(_rm, ensure_ascii=False), encoding="utf-8")
+for _n in ("backend", "memo"):
+    subprocess.run([sys.executable, str(GH / "h/sync.py"), "new", _n, "--into", str(GH / "out")], capture_output=True, text=True)
+_wf = GH / "out/backend/.github/workflows/harness.yml"; _wm = GH / "out/memo/.github/workflows/harness.yml"
+import yaml as _y
+_doc = _y.safe_load(_wf.read_text(encoding="utf-8")) if _wf.exists() else {}
+check("GitHub 원격이면 Actions 파일을 만들고 Pipelines는 만들지 않는다", _wf.exists() and not (GH / "out/backend/bitbucket-pipelines.yml").exists(), str(list((GH / "out/backend").iterdir())))
+_txt = _wf.read_text(encoding="utf-8") if _wf.exists() else ""
+check("Actions: 문서 검사 · 브랜치 이슈 키 · 비밀값 검사 · 하네스는 마켓플레이스 저장소에서 받는다 · 변경 알림 없음", set(_doc.get("jobs", {})) == {"docs", "secrets"} and "docs_check.py docs notes" in _txt and "E90" in _txt and "gitleaks" in _txt and "github.com/" + _rm["marketplace"]["repo"] + ".git" in _txt and "notify_impact" not in _txt, _txt[:400])
+_tm = _wm.read_text(encoding="utf-8") if _wm.exists() else ""
+check("Actions(메모): 비밀값 검사만", "gitleaks" in _tm and "docs_check" not in _tm and set((_y.safe_load(_tm) or {}).get("jobs", {})) == {"secrets"}, _tm[:300])
+_rm["base"] = "https://bitbucket.org/acme/"; (GH / "h/remotes.json").write_text(_j.dumps(_rm, ensure_ascii=False), encoding="utf-8")
+subprocess.run([sys.executable, str(GH / "h/sync.py"), "update", str(GH / "out/backend")], capture_output=True, text=True)
+check("원격을 Bitbucket으로 바꾸고 update하면 Pipelines로 바뀌고 sync가 만든 Actions는 지운다", (GH / "out/backend/bitbucket-pipelines.yml").exists() and not _wf.exists())
+check("하네스 저장소 자체의 시험 워크플로 (회귀 시험 · build --check · 플러그인 검증)", all(x in (HROOT / ".github/workflows/test.yml").read_text(encoding="utf-8") for x in ("tests/test_kit.py", "build.py --check", "claude plugin validate")))
+
 print(f"\n{ok} passed · {fail} failed")
+sys.exit(1 if fail else 0)

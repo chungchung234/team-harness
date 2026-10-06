@@ -1,6 +1,6 @@
 {
   "name": "ui",
-  "version": "0.13.8",
+  "version": "0.14.0",
   "description": "하네스 — 퍼블리셔용. /tokens(Figma 변수 → 토큰) /research /review-docs. core에 의존.",
   "author": {
     "name": "하네스 담당"

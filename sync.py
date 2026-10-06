@@ -7,7 +7,7 @@
 
 v0.12부터 스킬·훅·서브에이전트·스크립트는 저장소에 **복사하지 않는다** — 플러그인(core + 역할 플러그인)으로 온다.
 저장소는 `.claude/settings.json`의 enabledPlugins로 "무엇을 쓰는지" 선언만 한다(프로젝트 범위 — 그 저장소를 여는 모든 사람에게 켜지고, 설치 안 된 사람에겐 설치하라고 알린다).
-저장소에 남는 것: AGENTS.md(그 저장소의 지도만 — 공통 규칙은 core가 세션 시작에 넣는다) · settings.json · .gitignore · CODEOWNERS · bitbucket-pipelines.yml(하네스를 clone해서 검사) · .claude/harness.json · product의 양식.
+저장소에 남는 것: AGENTS.md(그 저장소의 지도만 — 공통 규칙은 core가 세션 시작에 넣는다) · settings.json · .gitignore · CODEOWNERS · 검사 파이프라인(원격이 Bitbucket이면 bitbucket-pipelines.yml, GitHub이면 .github/workflows/harness.yml — 하네스를 받아서 검사) · .claude/harness.json · product의 양식.
 하네스가 바뀌면 `harness` 저장소에 태그 하나 — 플러그인 갱신은 각자의 Claude Code가 받는다(자동 갱신 켬). update는 위 잔여 파일이 바뀌었을 때만.
 """
 from __future__ import annotations
@@ -104,6 +104,94 @@ pipelines:
 """
 
 
+ACTIONS = """# 모든 PR과 main에서 문서를 검사한다. 실패 출력의 → 줄이 수정 지침이다. (하네스 sync가 만든다 — 손으로 고치지 않는다)
+# 검사 스크립트는 저장소에 없다 — 하네스를 받아서 쓴다. 하네스가 비공개면 저장소 비밀값 HARNESS_TOKEN(읽기), 태그는 저장소 변수 HARNESS_REF(기본 main).
+# 변경 알림(티켓 댓글)은 넣지 않았다 — 바뀐 것은 읽는 쪽 Claude가 다음 말에 안다.
+name: harness
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 하네스 받기
+        env:
+          HARNESS_TOKEN: ${{ secrets.HARNESS_TOKEN }}
+          HARNESS_REF: ${{ vars.HARNESS_REF || 'main' }}
+        run: |
+          AUTH=""; [ -n "$HARNESS_TOKEN" ] && AUTH="x-access-token:${HARNESS_TOKEN}@"
+          git clone --quiet --depth 1 --branch "$HARNESS_REF" "https://${AUTH}HARNESS_REPO" .harness
+      - name: 문서 검사
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 .harness/plugins/core/scripts/gen_index.py docs --write
+          python3 .harness/plugins/core/scripts/docs_check.py docs notes
+      - name: 브랜치 이름의 이슈 키
+        if: github.event_name == 'pull_request'
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: echo "$BRANCH" | grep -Eq '^(main|master)$|^(feature|bugfix|hotfix)/[A-Z][A-Z0-9]+-[0-9]+-' || { echo "E90 브랜치 이름에 이슈 키가 없다 ($BRANCH) → feature/KEY-123-설명 형식으로 브랜치를 다시 만든다"; exit 1; }
+      - name: 지도 파일의 자리표시자
+        run: if grep -qE '(^|[^A-Z])KEY-[0-9]' AGENTS.md; then echo "E91 AGENTS.md에 자리표시자 KEY가 남아 있다 → 실제 Jira 프로젝트 키로 바꾼다"; exit 1; fi
+SECRETS_JOB"""
+
+ACTIONS_SECRETS = """  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 비밀값 검사
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /repo --no-git --redact --exit-code 1 || { echo "E92 비밀값이 들어 있다 → 지우고 환경변수·비밀값 저장소로. 이미 올라갔으면 키를 폐기한다"; exit 1; }
+"""
+
+ACTIONS_RAW = """# 메모 저장소 — 원자료. 검사는 비밀값 검사뿐이다(형식·목차·이슈 키 없음). (하네스 sync가 만든다)
+name: harness
+on:
+  pull_request:
+  push:
+jobs:
+""" + ACTIONS_SECRETS
+GENERATED_CI = ("# 모든 PR과 main에서 문서를 검사한다", "# 메모 저장소 — 원자료")
+
+
+def on_github() -> bool:
+    return "github.com" in remotes().get("base", "")
+
+
+def harness_repo_path() -> str:
+    """CI가 하네스를 받는 곳(https:// 뒤). GitHub 마켓플레이스가 있으면 그 저장소, 아니면 base + harness.git."""
+    m = remotes().get("marketplace") or {}
+    if m.get("source") == "github" and m.get("repo"):
+        return f"github.com/{m['repo']}.git"
+    return remotes()["base"].replace("https://", "").rstrip("/") + "/harness.git"
+
+
+def actions_text(raw: bool) -> str:
+    if raw:
+        return ACTIONS_RAW
+    return ACTIONS.replace("HARNESS_REPO", harness_repo_path()).replace("SECRETS_JOB", ACTIONS_SECRETS)
+
+
+def put_ci(d: Path, raw: bool):
+    """원격이 GitHub이면 Actions, 아니면 Bitbucket Pipelines. 반대쪽 파일이 sync가 만든 것이면 지운다."""
+    bb, gh = d / "bitbucket-pipelines.yml", d / ".github" / "workflows" / "harness.yml"
+    mine = lambda f: f.exists() and f.read_text(encoding="utf-8").startswith(GENERATED_CI)
+    if on_github():
+        gh.parent.mkdir(parents=True, exist_ok=True)
+        gh.write_text(actions_text(raw), encoding="utf-8")
+        if mine(bb):
+            bb.unlink()
+    else:
+        bb.write_text(PIPELINES_RAW.replace("CHANGE-ME-workspace", _ws()) if raw else pipelines_text(), encoding="utf-8")
+        if mine(gh):
+            gh.unlink()
+
+
 def _ws() -> str:
     import re as _re
     m = _re.search(r"bitbucket\.org/([^/]+)/", remotes().get("base", ""))
@@ -157,7 +245,7 @@ def put_residual(d: Path, name: str):
     ensure_gitignore(d)
     put_settings(d, name)
     raw = bool(REPOS.get(name, {}).get("raw"))
-    (d / "bitbucket-pipelines.yml").write_text(PIPELINES_RAW.replace("CHANGE-ME-workspace", _ws()) if raw else pipelines_text(), encoding="utf-8")
+    put_ci(d, raw)
     hj = d / ".claude" / "harness.json"
     old = json.loads(hj.read_text(encoding="utf-8")) if hj.exists() else {}
     if raw:

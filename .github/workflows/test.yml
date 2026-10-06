@@ -1,0 +1,31 @@
+# 하네스 담당이 고쳐서 올리면 회귀 시험과 플러그인 검증을 돌린다. 깨지면 GitHub가 올린 사람에게 알린다.
+name: 하네스 시험
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: 준비
+        run: |
+          python3 -m pip install --quiet pyyaml
+          git config --global user.name "ci"
+          git config --global user.email "ci@example.com"
+          git config --global init.defaultBranch main
+      - name: 역할 플러그인 사본이 코어와 같은가
+        run: python3 build.py --check
+      - name: 회귀 시험
+        run: python3 tests/test_kit.py
+      - name: 마켓플레이스·플러그인 검증
+        run: |
+          npm install -g --silent @anthropic-ai/claude-code
+          claude plugin validate .
+          for p in plugins/*/; do claude plugin validate "$p"; done
