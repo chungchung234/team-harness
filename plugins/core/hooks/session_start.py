@@ -229,6 +229,7 @@ lines = []
 # 공통 규칙 — 플러그인 루트의 CLAUDE.md는 로드되지 않으므로(공식 문서) 여기서 넣는다. 저장소 AGENTS.md에는 그 저장소의 지도만 있다.
 if RULES.exists() and (root / "docs").is_dir():
     lines.append(RULES.read_text(encoding="utf-8").strip())
+    lines.append(f"[스크립트] {SCRIPTS} — 하네스 스크립트는 여기 있다(python3 {SCRIPTS}/<이름>.py)")
 state = load_state()
 heads = state.get("heads", {})
 old_own = heads.get(str(root))

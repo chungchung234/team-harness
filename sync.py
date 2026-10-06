@@ -209,7 +209,7 @@ def put_settings(d: Path, name: str):
     # 스킬의 allowed-tools는 쓰지 않는다 — 모델이 부른 스킬에 allowed-tools가 있으면 본문이 로드되지 않았다(T35, 비대화형). 권한은 여기서 준다.
     # 하네스 스크립트·git은 묻지 않고 돈다 — 비개발자에게 "python3 … 허용?" 창이 뜨지 않게. 위험한 것(main 직접 push·force)은 서버의 브랜치 권한이 막는다
     allow = settings.setdefault("permissions", {}).setdefault("allow", [])
-    for rule in [f"Bash(python3 *scripts/{n}.py*)" for n in HARNESS_SCRIPTS] + ["Write(docs/**)", "Edit(docs/**)", "Write(notes/**)", "Edit(notes/**)", "Write(../*/docs/questions/**)", "Write(../memo/people/**)", "Edit(../memo/people/**)"] + [f"Bash(git {g}*)" for g in ("status", "log", "diff", "show", "fetch", "pull", "add", "commit", "checkout", "switch", "branch", "rev-parse", "push -u origin", "push -q -u origin", "rebase", "merge --ff-only", "stash", "-C")] + ["Bash(ls*)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(find *)"]:
+    for rule in [f"Bash(python3 *scripts/{n}.py*)" for n in HARNESS_SCRIPTS] + ["Write(docs/**)", "Edit(docs/**)", "Write(notes/**)", "Edit(notes/**)", "Write(../*/docs/questions/**)", "Write(../memo/people/**)", "Edit(../memo/people/**)"] + [f"Bash(git {g}*)" for g in ("status", "log", "diff", "show", "fetch", "pull", "add", "commit", "checkout", "switch", "branch", "rev-parse", "push -u origin", "push -q -u origin", "rebase", "merge --ff-only", "stash", "-C")] + ["Bash(cd *)", "Bash(ls*)", "Bash(cat *)", "Bash(head *)", "Bash(grep *)", "Bash(find *)"]:
         if rule not in allow:
             allow.append(rule)
     deny = settings.setdefault("permissions", {}).setdefault("deny", [])
