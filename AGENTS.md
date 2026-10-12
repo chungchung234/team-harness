@@ -4,6 +4,8 @@
 
 - **"써 보고 싶어", "시연 환경 만들어 줘", "처음이야"** → `python3 demo/try.py` 를 돌린다(기본 위치 `~/team-harness-work`). 끝에 나오는 "이제 이렇게 써 보세요"를 사람 말로 전한다. git·명령어 이야기는 하지 않는다. Claude Code 플러그인(team-harness 마켓플레이스)이 사용자 범위로 설치된다는 것은 한 줄로 미리 말한다. 원하지 않으면 `--no-plugins`.
 - **"이게 뭐야", "핵심이 뭐야"** → `PHILOSOPHY.md`의 "다섯 가지 약속"을 쉬운 말로 전한다. 설계 세부는 묻기 전에는 꺼내지 않는다.
+- **"뭘 하면 돼", "내 역할은", "어떻게 써"** → `docs/업무-가이드.md`의 그 역할 부분을 사람 말로 전한다. 팀원에게 보낼 안내도 이 문서다.
+- **"연결 값 넣자", "골격 올려 줘", "팀 저장소에 맞추자"**(하네스 마스터) → `docs/팀에-맞추기.md`. `remotes.json`을 고치고 `python3 build.py`, 골격은 `python3 sync.py new <이름> --into ../work`. 원격 저장소 주소는 사람이 준 것만 쓴다.
 - **"우리 팀 구조 정하자", "저장소 어떻게 나눌까", "저장소 하나 더"** → core 플러그인의 `team` 스킬. 대화로 정하고, 사람이 "승인"한 뒤에만 `team.json`에 적는다.
 - **하네스 자체를 고치는 일**(하네스 담당) → `docs/하네스-담당.md`. 플러그인을 고친 뒤에는 `python3 build.py`, 저장소 골격이 바뀌면 `python3 sync.py update demo/*`.
 
@@ -14,5 +16,5 @@
 | `demo/` | 시연 저장소 일곱(product·backend·agent·frontend·ui·infra·memo) — 예시 정책서 POL-01·스펙 SPEC-01 포함. `demo/try.py`가 이것으로 시연 환경을 만든다 |
 | `team.json` | 팀 구성 — 저장소·주인(역할)·읽기·문서 종류·플러그인 |
 | `build.py` · `sync.py` · `remote.py` · `remotes.json` · `repo-template/` | 하네스 담당용 도구 |
-| `docs/` | 구조·동작·시연·팀에 맞추기·하네스 담당 문서 |
+| `docs/` | 업무 가이드(팀원용)·구조·동작·시연·팀에 맞추기·하네스 담당 문서 |
 | `tests/` | 회귀 시험 |
